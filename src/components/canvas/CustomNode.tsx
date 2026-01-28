@@ -1,6 +1,6 @@
 'use client';
 
-import { memo } from 'react';
+import { memo, useState, useRef, useEffect } from 'react';
 import { Handle, Position } from '@xyflow/react';
 import { NodeType, ContentStatus } from '@/types';
 import { Badge } from '@/components/ui/badge';
@@ -43,13 +43,14 @@ interface CustomNodeProps {
   selected?: boolean;
 }
 
-const nodeTypeConfig: Record<NodeType, { icon: React.ElementType; color: string; bgColor: string; borderColor: string; titleBgColor: string }> = {
+const nodeTypeConfig: Record<NodeType, { icon: React.ElementType; color: string; bgColor: string; borderColor: string; titleBgColor: string; handleColor: string }> = {
   pillar: {
     icon: Target,
     color: 'text-blue-600',
     bgColor: 'bg-blue-50',
     borderColor: 'border-blue-500',
     titleBgColor: 'bg-blue-100',
+    handleColor: '#3b82f6',
   },
   cluster: {
     icon: Layers,
@@ -57,6 +58,7 @@ const nodeTypeConfig: Record<NodeType, { icon: React.ElementType; color: string;
     bgColor: 'bg-emerald-50',
     borderColor: 'border-emerald-500',
     titleBgColor: 'bg-emerald-100',
+    handleColor: '#10b981',
   },
   supporting: {
     icon: FileText,
@@ -64,6 +66,7 @@ const nodeTypeConfig: Record<NodeType, { icon: React.ElementType; color: string;
     bgColor: 'bg-gray-50',
     borderColor: 'border-gray-400',
     titleBgColor: 'bg-gray-100',
+    handleColor: '#9ca3af',
   },
   external: {
     icon: ExternalLink,
@@ -71,6 +74,7 @@ const nodeTypeConfig: Record<NodeType, { icon: React.ElementType; color: string;
     bgColor: 'bg-purple-50',
     borderColor: 'border-purple-500',
     titleBgColor: 'bg-purple-100',
+    handleColor: '#a855f7',
   },
   orphan: {
     icon: AlertTriangle,
@@ -78,6 +82,7 @@ const nodeTypeConfig: Record<NodeType, { icon: React.ElementType; color: string;
     bgColor: 'bg-red-50',
     borderColor: 'border-red-500',
     titleBgColor: 'bg-red-100',
+    handleColor: '#ef4444',
   },
   homepage: {
     icon: Home,
@@ -85,6 +90,7 @@ const nodeTypeConfig: Record<NodeType, { icon: React.ElementType; color: string;
     bgColor: 'bg-indigo-50',
     borderColor: 'border-indigo-500',
     titleBgColor: 'bg-indigo-100',
+    handleColor: '#6366f1',
   },
   product: {
     icon: Package,
@@ -92,6 +98,7 @@ const nodeTypeConfig: Record<NodeType, { icon: React.ElementType; color: string;
     bgColor: 'bg-amber-50',
     borderColor: 'border-amber-500',
     titleBgColor: 'bg-amber-100',
+    handleColor: '#f59e0b',
   },
   category: {
     icon: FolderOpen,
@@ -99,6 +106,7 @@ const nodeTypeConfig: Record<NodeType, { icon: React.ElementType; color: string;
     bgColor: 'bg-cyan-50',
     borderColor: 'border-cyan-500',
     titleBgColor: 'bg-cyan-100',
+    handleColor: '#06b6d4',
   },
   navpage: {
     icon: Navigation,
@@ -106,6 +114,7 @@ const nodeTypeConfig: Record<NodeType, { icon: React.ElementType; color: string;
     bgColor: 'bg-slate-50',
     borderColor: 'border-slate-400',
     titleBgColor: 'bg-slate-100',
+    handleColor: '#64748b',
   },
   blog: {
     icon: Newspaper,
@@ -113,6 +122,7 @@ const nodeTypeConfig: Record<NodeType, { icon: React.ElementType; color: string;
     bgColor: 'bg-rose-50',
     borderColor: 'border-rose-500',
     titleBgColor: 'bg-rose-100',
+    handleColor: '#f43f5e',
   },
 };
 
@@ -129,11 +139,45 @@ const statusOrder: ContentStatus[] = ['planned', 'draft', 'review', 'published',
 function CustomNode({ id, data, selected }: CustomNodeProps) {
   const { deleteNode, duplicateNode, updateNode } = useProjectStore();
   const { setSelectedNodeId } = useUIStore();
+  const [isEditingKeyword, setIsEditingKeyword] = useState(false);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [editKeywordValue, setEditKeywordValue] = useState(data.primaryKeyword || '');
+  const [editTitleValue, setEditTitleValue] = useState(data.title || '');
+  const keywordInputRef = useRef<HTMLInputElement>(null);
+  const titleInputRef = useRef<HTMLInputElement>(null);
 
   const nodeType = data.nodeType || 'supporting';
   const config = nodeTypeConfig[nodeType];
   const Icon = config.icon;
   const status = statusConfig[data.status] || statusConfig.planned;
+
+  // Focus input when editing starts
+  useEffect(() => {
+    if (isEditingKeyword && keywordInputRef.current) {
+      keywordInputRef.current.focus();
+      keywordInputRef.current.select();
+    }
+  }, [isEditingKeyword]);
+
+  useEffect(() => {
+    if (isEditingTitle && titleInputRef.current) {
+      titleInputRef.current.focus();
+      titleInputRef.current.select();
+    }
+  }, [isEditingTitle]);
+
+  // Sync edit values with data when not editing
+  useEffect(() => {
+    if (!isEditingKeyword) {
+      setEditKeywordValue(data.primaryKeyword || '');
+    }
+  }, [data.primaryKeyword, isEditingKeyword]);
+
+  useEffect(() => {
+    if (!isEditingTitle) {
+      setEditTitleValue(data.title || '');
+    }
+  }, [data.title, isEditingTitle]);
 
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -153,6 +197,44 @@ function CustomNode({ id, data, selected }: CustomNodeProps) {
     updateNode(id, { status: newStatus });
   };
 
+  const handleKeywordDoubleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsEditingKeyword(true);
+  };
+
+  const handleKeywordSave = () => {
+    updateNode(id, { primaryKeyword: editKeywordValue.trim() || undefined });
+    setIsEditingKeyword(false);
+  };
+
+  const handleKeywordKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleKeywordSave();
+    } else if (e.key === 'Escape') {
+      setEditKeywordValue(data.primaryKeyword || '');
+      setIsEditingKeyword(false);
+    }
+  };
+
+  const handleTitleDoubleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsEditingTitle(true);
+  };
+
+  const handleTitleSave = () => {
+    updateNode(id, { title: editTitleValue.trim() || 'Untitled Page' });
+    setIsEditingTitle(false);
+  };
+
+  const handleTitleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleTitleSave();
+    } else if (e.key === 'Escape') {
+      setEditTitleValue(data.title || '');
+      setIsEditingTitle(false);
+    }
+  };
+
   const slug = data.slug as string | undefined;
 
   return (
@@ -169,7 +251,8 @@ function CustomNode({ id, data, selected }: CustomNodeProps) {
       <Handle
         type="target"
         position={Position.Top}
-        className="!w-3 !h-3 !bg-gray-400 !border-2 !border-white"
+        className="!w-3 !h-3 !border-2 !border-white"
+        style={{ backgroundColor: config.handleColor }}
       />
 
       {/* Header */}
@@ -193,13 +276,64 @@ function CustomNode({ id, data, selected }: CustomNodeProps) {
         </DropdownMenu>
       </div>
 
-      {/* Title Section with colored background */}
+      {/* Keyword Section with colored background */}
       <div className={cn('px-3 py-2 border-b', config.titleBgColor, config.borderColor)}>
-        <h3 className={cn('font-semibold leading-tight line-clamp-2', config.color)}>
-          {data.title || 'Untitled Page'}
-        </h3>
+        {/* Primary Keyword - prominent, double-click to edit */}
+        {isEditingKeyword ? (
+          <input
+            ref={keywordInputRef}
+            type="text"
+            value={editKeywordValue}
+            onChange={(e) => setEditKeywordValue(e.target.value)}
+            onBlur={handleKeywordSave}
+            onKeyDown={handleKeywordKeyDown}
+            onClick={(e) => e.stopPropagation()}
+            className={cn(
+              'w-full font-semibold leading-tight bg-white/50 rounded px-1 -mx-1 outline-none ring-2 ring-blue-400',
+              config.color
+            )}
+            placeholder="Enter keyword..."
+          />
+        ) : (
+          <h3
+            className={cn(
+              'font-semibold leading-tight line-clamp-2 cursor-text',
+              config.color,
+              !data.primaryKeyword && 'italic opacity-60'
+            )}
+            onDoubleClick={handleKeywordDoubleClick}
+            title="Double-click to edit keyword"
+          >
+            {data.primaryKeyword || 'No keyword set'}
+          </h3>
+        )}
+
+        {/* Page Title - smaller, double-click to edit */}
+        {isEditingTitle ? (
+          <input
+            ref={titleInputRef}
+            type="text"
+            value={editTitleValue}
+            onChange={(e) => setEditTitleValue(e.target.value)}
+            onBlur={handleTitleSave}
+            onKeyDown={handleTitleKeyDown}
+            onClick={(e) => e.stopPropagation()}
+            className="w-full text-xs text-gray-600 mt-1 bg-white/50 rounded px-1 -mx-1 outline-none ring-2 ring-blue-400"
+            placeholder="Enter title..."
+          />
+        ) : (
+          <p
+            className="text-xs text-gray-600 mt-1 truncate cursor-text hover:text-gray-800"
+            title="Double-click to edit title"
+            onDoubleClick={handleTitleDoubleClick}
+          >
+            {data.title || 'Untitled Page'}
+          </p>
+        )}
+
+        {/* Slug */}
         {slug && (
-          <p className="text-xs text-gray-500 mt-1 truncate font-mono">
+          <p className="text-xs text-gray-400 mt-0.5 truncate font-mono">
             /{slug}
           </p>
         )}
@@ -207,12 +341,6 @@ function CustomNode({ id, data, selected }: CustomNodeProps) {
 
       {/* Content */}
       <div className="p-3 space-y-2">
-        {data.primaryKeyword && (
-          <div className="text-xs text-gray-600 truncate">
-            <span className="text-gray-400">Keyword: </span>
-            <span className="font-medium">{data.primaryKeyword}</span>
-          </div>
-        )}
 
         {/* Clickable Status Badge */}
         <div className="pt-1">
@@ -249,7 +377,8 @@ function CustomNode({ id, data, selected }: CustomNodeProps) {
       <Handle
         type="source"
         position={Position.Bottom}
-        className="!w-3 !h-3 !bg-gray-400 !border-2 !border-white"
+        className="!w-3 !h-3 !border-2 !border-white"
+        style={{ backgroundColor: config.handleColor }}
       />
     </div>
   );
