@@ -8,7 +8,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
@@ -28,12 +27,16 @@ import {
   FileImage,
   FileText,
   RotateCcw,
-  Keyboard,
   HelpCircle,
+  ChevronLeft,
+  LayoutDashboard,
 } from 'lucide-react';
 import { useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 
 export default function Header() {
+  const router = useRouter();
+  const pathname = usePathname();
   const { project, setProject, resetProject, nodes, edges } = useProjectStore();
   const {
     leftPanelOpen,
@@ -47,6 +50,9 @@ export default function Header() {
 
   const [isEditingName, setIsEditingName] = useState(false);
   const [projectName, setProjectName] = useState(project.name);
+
+  // Check if we're in the editor (not on dashboard)
+  const isInEditor = pathname.startsWith('/project/');
 
   const handleNameSubmit = () => {
     setProject({ name: projectName });
@@ -92,9 +98,37 @@ export default function Header() {
     input.click();
   };
 
+  const handleBackToDashboard = () => {
+    router.push('/');
+  };
+
+  // Sync project name when project changes
+  if (projectName !== project.name && !isEditingName) {
+    setProjectName(project.name);
+  }
+
   return (
     <header className="h-14 border-b bg-white flex items-center justify-between px-4">
       <div className="flex items-center gap-4">
+        {isInEditor && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleBackToDashboard}
+                  className="gap-2 text-gray-600 hover:text-gray-900"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  <LayoutDashboard className="w-4 h-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Back to Dashboard</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
+
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>

@@ -45,6 +45,9 @@ const defaultProject: Project = {
 };
 
 interface ProjectState {
+  // Current project ID (for multi-project support)
+  currentProjectId: string | null;
+
   // Project data
   project: Project;
   nodes: CocoonNode[];
@@ -54,6 +57,12 @@ interface ProjectState {
   setProject: (project: Partial<Project>) => void;
   updateSettings: (settings: Partial<ProjectSettings>) => void;
   resetProject: () => void;
+
+  // Multi-project actions
+  loadProject: (id: string) => boolean;
+  saveProject: () => void;
+  clearProject: () => void;
+  initializeNewProject: (id: string, name: string, description?: string, domain?: string) => void;
 
   // Node actions
   onNodesChange: OnNodesChange<CocoonNode>;
@@ -79,42 +88,169 @@ interface ProjectState {
   setEdges: (edges: CocoonEdge[]) => void;
 }
 
+// Helper to get storage key for a project
+const getProjectStorageKey = (id: string) => `cocoonflow-project-${id}`;
+
+// Helper to save project data to localStorage
+const saveProjectToStorage = (id: string, data: { project: Project; nodes: CocoonNode[]; edges: CocoonEdge[] }) => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(getProjectStorageKey(id), JSON.stringify(data));
+  }
+};
+
+// Helper to load project data from localStorage
+const loadProjectFromStorage = (id: string): { project: Project; nodes: CocoonNode[]; edges: CocoonEdge[] } | null => {
+  if (typeof window === 'undefined') return null;
+  const data = localStorage.getItem(getProjectStorageKey(id));
+  if (!data) return null;
+  try {
+    return JSON.parse(data);
+  } catch {
+    return null;
+  }
+};
+
 export const useProjectStore = create<ProjectState>()(
   persist(
     (set, get) => ({
+      currentProjectId: null,
       project: defaultProject,
       nodes: [],
       edges: [],
 
-      setProject: (projectData) =>
+      setProject: (projectData) => {
         set((state) => ({
           project: {
             ...state.project,
             ...projectData,
             updatedAt: new Date().toISOString(),
           },
-        })),
+        }));
+        // Auto-save after update
+        const state = get();
+        if (state.currentProjectId) {
+          saveProjectToStorage(state.currentProjectId, {
+            project: state.project,
+            nodes: state.nodes,
+            edges: state.edges,
+          });
+        }
+      },
 
-      updateSettings: (settings) =>
+      updateSettings: (settings) => {
         set((state) => ({
           project: {
             ...state.project,
             settings: { ...state.project.settings, ...settings },
             updatedAt: new Date().toISOString(),
           },
-        })),
+        }));
+        // Auto-save after update
+        const state = get();
+        if (state.currentProjectId) {
+          saveProjectToStorage(state.currentProjectId, {
+            project: state.project,
+            nodes: state.nodes,
+            edges: state.edges,
+          });
+        }
+      },
 
-      resetProject: () =>
+      resetProject: () => {
+        const state = get();
+        const newProject = {
+          ...defaultProject,
+          id: state.currentProjectId || uuidv4(),
+          createdAt: new Date().toISOString()
+        };
         set({
-          project: { ...defaultProject, id: uuidv4(), createdAt: new Date().toISOString() },
+          project: newProject,
           nodes: [],
           edges: [],
-        }),
+        });
+        if (state.currentProjectId) {
+          saveProjectToStorage(state.currentProjectId, {
+            project: newProject,
+            nodes: [],
+            edges: [],
+          });
+        }
+      },
 
-      onNodesChange: (changes) =>
+      loadProject: (id) => {
+        const data = loadProjectFromStorage(id);
+        if (data) {
+          set({
+            currentProjectId: id,
+            project: data.project,
+            nodes: data.nodes,
+            edges: data.edges,
+          });
+          return true;
+        }
+        return false;
+      },
+
+      saveProject: () => {
+        const state = get();
+        if (state.currentProjectId) {
+          saveProjectToStorage(state.currentProjectId, {
+            project: state.project,
+            nodes: state.nodes,
+            edges: state.edges,
+          });
+        }
+      },
+
+      clearProject: () => {
+        set({
+          currentProjectId: null,
+          project: defaultProject,
+          nodes: [],
+          edges: [],
+        });
+      },
+
+      initializeNewProject: (id, name, description, domain) => {
+        const now = new Date().toISOString();
+        const newProject: Project = {
+          ...defaultProject,
+          id,
+          name,
+          description: description || '',
+          domain: domain || '',
+          createdAt: now,
+          updatedAt: now,
+        };
+        set({
+          currentProjectId: id,
+          project: newProject,
+          nodes: [],
+          edges: [],
+        });
+        saveProjectToStorage(id, {
+          project: newProject,
+          nodes: [],
+          edges: [],
+        });
+      },
+
+      onNodesChange: (changes) => {
         set((state) => ({
           nodes: applyNodeChanges(changes, state.nodes),
-        })),
+        }));
+        // Defer save to avoid blocking
+        setTimeout(() => {
+          const state = get();
+          if (state.currentProjectId) {
+            saveProjectToStorage(state.currentProjectId, {
+              project: state.project,
+              nodes: state.nodes,
+              edges: state.edges,
+            });
+          }
+        }, 0);
+      },
 
       addNode: (type, position) => {
         const nodeId = uuidv4();
@@ -135,10 +271,19 @@ export const useProjectStore = create<ProjectState>()(
           nodes: [...state.nodes, newNode],
           project: { ...state.project, updatedAt: new Date().toISOString() },
         }));
+        // Save after adding
+        const state = get();
+        if (state.currentProjectId) {
+          saveProjectToStorage(state.currentProjectId, {
+            project: state.project,
+            nodes: state.nodes,
+            edges: state.edges,
+          });
+        }
         return nodeId;
       },
 
-      updateNode: (nodeId, data) =>
+      updateNode: (nodeId, data) => {
         set((state) => ({
           nodes: state.nodes.map((node) =>
             node.id === nodeId
@@ -146,16 +291,36 @@ export const useProjectStore = create<ProjectState>()(
               : node
           ),
           project: { ...state.project, updatedAt: new Date().toISOString() },
-        })),
+        }));
+        // Save after update
+        const state = get();
+        if (state.currentProjectId) {
+          saveProjectToStorage(state.currentProjectId, {
+            project: state.project,
+            nodes: state.nodes,
+            edges: state.edges,
+          });
+        }
+      },
 
-      deleteNode: (nodeId) =>
+      deleteNode: (nodeId) => {
         set((state) => ({
           nodes: state.nodes.filter((node) => node.id !== nodeId),
           edges: state.edges.filter(
             (edge) => edge.source !== nodeId && edge.target !== nodeId
           ),
           project: { ...state.project, updatedAt: new Date().toISOString() },
-        })),
+        }));
+        // Save after delete
+        const state = get();
+        if (state.currentProjectId) {
+          saveProjectToStorage(state.currentProjectId, {
+            project: state.project,
+            nodes: state.nodes,
+            edges: state.edges,
+          });
+        }
+      },
 
       duplicateNode: (nodeId) => {
         const state = get();
@@ -179,14 +344,35 @@ export const useProjectStore = create<ProjectState>()(
           nodes: [...state.nodes, newNode],
           project: { ...state.project, updatedAt: new Date().toISOString() },
         });
+        // Save after duplicate
+        const newState = get();
+        if (newState.currentProjectId) {
+          saveProjectToStorage(newState.currentProjectId, {
+            project: newState.project,
+            nodes: newState.nodes,
+            edges: newState.edges,
+          });
+        }
       },
 
-      onEdgesChange: (changes) =>
+      onEdgesChange: (changes) => {
         set((state) => ({
           edges: applyEdgeChanges(changes, state.edges),
-        })),
+        }));
+        // Defer save
+        setTimeout(() => {
+          const state = get();
+          if (state.currentProjectId) {
+            saveProjectToStorage(state.currentProjectId, {
+              project: state.project,
+              nodes: state.nodes,
+              edges: state.edges,
+            });
+          }
+        }, 0);
+      },
 
-      onConnect: (connection: Connection) =>
+      onConnect: (connection: Connection) => {
         set((state) => ({
           edges: addEdge(
             {
@@ -201,9 +387,19 @@ export const useProjectStore = create<ProjectState>()(
             state.edges
           ),
           project: { ...state.project, updatedAt: new Date().toISOString() },
-        })),
+        }));
+        // Save after connect
+        const state = get();
+        if (state.currentProjectId) {
+          saveProjectToStorage(state.currentProjectId, {
+            project: state.project,
+            nodes: state.nodes,
+            edges: state.edges,
+          });
+        }
+      },
 
-      updateEdge: (edgeId, data) =>
+      updateEdge: (edgeId, data) => {
         set((state) => ({
           edges: state.edges.map((edge) =>
             edge.id === edgeId
@@ -211,24 +407,54 @@ export const useProjectStore = create<ProjectState>()(
               : edge
           ),
           project: { ...state.project, updatedAt: new Date().toISOString() },
-        })),
+        }));
+        // Save after update
+        const state = get();
+        if (state.currentProjectId) {
+          saveProjectToStorage(state.currentProjectId, {
+            project: state.project,
+            nodes: state.nodes,
+            edges: state.edges,
+          });
+        }
+      },
 
-      deleteEdge: (edgeId) =>
+      deleteEdge: (edgeId) => {
         set((state) => ({
           edges: state.edges.filter((edge) => edge.id !== edgeId),
           project: { ...state.project, updatedAt: new Date().toISOString() },
-        })),
+        }));
+        // Save after delete
+        const state = get();
+        if (state.currentProjectId) {
+          saveProjectToStorage(state.currentProjectId, {
+            project: state.project,
+            nodes: state.nodes,
+            edges: state.edges,
+          });
+        }
+      },
 
-      addKeyword: (keyword) =>
+      addKeyword: (keyword) => {
         set((state) => ({
           project: {
             ...state.project,
             keywords: [...state.project.keywords, { ...keyword, id: uuidv4() }],
             updatedAt: new Date().toISOString(),
           },
-        })),
+        }));
+        // Save after add
+        const state = get();
+        if (state.currentProjectId) {
+          saveProjectToStorage(state.currentProjectId, {
+            project: state.project,
+            nodes: state.nodes,
+            edges: state.edges,
+          });
+        }
+      },
 
-      updateKeyword: (keywordId, data) =>
+      updateKeyword: (keywordId, data) => {
         set((state) => ({
           project: {
             ...state.project,
@@ -237,18 +463,38 @@ export const useProjectStore = create<ProjectState>()(
             ),
             updatedAt: new Date().toISOString(),
           },
-        })),
+        }));
+        // Save after update
+        const state = get();
+        if (state.currentProjectId) {
+          saveProjectToStorage(state.currentProjectId, {
+            project: state.project,
+            nodes: state.nodes,
+            edges: state.edges,
+          });
+        }
+      },
 
-      deleteKeyword: (keywordId) =>
+      deleteKeyword: (keywordId) => {
         set((state) => ({
           project: {
             ...state.project,
             keywords: state.project.keywords.filter((kw) => kw.id !== keywordId),
             updatedAt: new Date().toISOString(),
           },
-        })),
+        }));
+        // Save after delete
+        const state = get();
+        if (state.currentProjectId) {
+          saveProjectToStorage(state.currentProjectId, {
+            project: state.project,
+            nodes: state.nodes,
+            edges: state.edges,
+          });
+        }
+      },
 
-      assignKeywordToNode: (keywordId, nodeId) =>
+      assignKeywordToNode: (keywordId, nodeId) => {
         set((state) => ({
           project: {
             ...state.project,
@@ -257,17 +503,48 @@ export const useProjectStore = create<ProjectState>()(
             ),
             updatedAt: new Date().toISOString(),
           },
-        })),
+        }));
+        // Save after assign
+        const state = get();
+        if (state.currentProjectId) {
+          saveProjectToStorage(state.currentProjectId, {
+            project: state.project,
+            nodes: state.nodes,
+            edges: state.edges,
+          });
+        }
+      },
 
-      setNodes: (nodes) => set({ nodes }),
-      setEdges: (edges) => set({ edges }),
+      setNodes: (nodes) => {
+        set({ nodes });
+        // Save after set
+        const state = get();
+        if (state.currentProjectId) {
+          saveProjectToStorage(state.currentProjectId, {
+            project: state.project,
+            nodes: state.nodes,
+            edges: state.edges,
+          });
+        }
+      },
+
+      setEdges: (edges) => {
+        set({ edges });
+        // Save after set
+        const state = get();
+        if (state.currentProjectId) {
+          saveProjectToStorage(state.currentProjectId, {
+            project: state.project,
+            nodes: state.nodes,
+            edges: state.edges,
+          });
+        }
+      },
     }),
     {
-      name: 'cocoonflow-project',
+      name: 'cocoonflow-current-project',
       partialize: (state) => ({
-        project: state.project,
-        nodes: state.nodes,
-        edges: state.edges,
+        currentProjectId: state.currentProjectId,
       }),
     }
   )

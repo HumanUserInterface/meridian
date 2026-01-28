@@ -1,73 +1,329 @@
 'use client';
 
-import { useUIStore } from '@/stores/uiStore';
-import Header from '@/components/Header';
-import Canvas from '@/components/canvas/Canvas';
-import LeftPanel from '@/components/panels/LeftPanel';
-import RightPanel from '@/components/panels/RightPanel';
-import ExportModal from '@/components/modals/ExportModal';
-import ImportModal from '@/components/modals/ImportModal';
-import { cn } from '@/lib/utils';
-import { useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
+import { useProjectsStore } from '@/stores/projectsStore';
+import { useProjectStore } from '@/stores/projectStore';
+import { useHydration } from '@/lib/useHydration';
+import ProjectCard from '@/components/dashboard/ProjectCard';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Plus,
+  Search,
+  FolderOpen,
+  ArrowUpDown,
+} from 'lucide-react';
 
-export default function Home() {
-  const { leftPanelOpen, rightPanelOpen, toggleLeftPanel, toggleRightPanel } = useUIStore();
+type SortOption = 'modified' | 'created' | 'name';
 
-  // Keyboard shortcuts
+export default function Dashboard() {
+  const router = useRouter();
+  const { projects, addProject, migrated, setMigrated } = useProjectsStore();
+  const { initializeNewProject } = useProjectStore();
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState<SortOption>('modified');
+  const [showNewProjectDialog, setShowNewProjectDialog] = useState(false);
+  const [newProjectName, setNewProjectName] = useState('');
+  const [newProjectDescription, setNewProjectDescription] = useState('');
+  const [newProjectDomain, setNewProjectDomain] = useState('');
+  const isHydrated = useHydration();
+
+  // Migration logic: migrate old single-project data to new multi-project format
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Ignore if typing in an input
-      if (
-        e.target instanceof HTMLInputElement ||
-        e.target instanceof HTMLTextAreaElement
-      ) {
-        return;
-      }
+    if (!isHydrated) return;
 
-      if (e.key === '[') {
-        toggleLeftPanel();
-      } else if (e.key === ']') {
-        toggleRightPanel();
-      }
-    };
+    // Check if we need to migrate
+    if (migrated) return;
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [toggleLeftPanel, toggleRightPanel]);
+    const oldProjectData = localStorage.getItem('cocoonflow-project');
+    if (oldProjectData) {
+      try {
+        const data = JSON.parse(oldProjectData);
+        if (data.state) {
+          const { project, nodes, edges } = data.state;
+
+          // Generate new ID for the migrated project
+          const newId = crypto.randomUUID();
+
+          // Save the project data under the new key
+          localStorage.setItem(`cocoonflow-project-${newId}`, JSON.stringify({
+            project: { ...project, id: newId },
+            nodes: nodes || [],
+            edges: edges || [],
+          }));
+
+          // Add to projects list
+          addProject(
+            project.name || 'Migrated Project',
+            project.description,
+            project.domain
+          );
+
+          // Update the newly added project with correct stats
+          const projectsState = useProjectsStore.getState();
+          const lastProject = projectsState.projects[projectsState.projects.length - 1];
+          if (lastProject) {
+            projectsState.updateProjectMeta(lastProject.id, {
+              nodeCount: nodes?.length || 0,
+              edgeCount: edges?.length || 0,
+            });
+
+            // Fix: we need to update the stored project data with the correct ID
+            localStorage.removeItem(`cocoonflow-project-${newId}`);
+            localStorage.setItem(`cocoonflow-project-${lastProject.id}`, JSON.stringify({
+              project: { ...project, id: lastProject.id },
+              nodes: nodes || [],
+              edges: edges || [],
+            }));
+          }
+
+          // Remove old data
+          localStorage.removeItem('cocoonflow-project');
+        }
+      } catch (e) {
+        console.error('Failed to migrate old project data:', e);
+      }
+    }
+
+    setMigrated(true);
+  }, [isHydrated, migrated, addProject, setMigrated]);
+
+  // Filter and sort projects
+  const filteredProjects = useMemo(() => {
+    let filtered = projects;
+
+    // Apply search filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (p) =>
+          p.name.toLowerCase().includes(query) ||
+          p.description?.toLowerCase().includes(query) ||
+          p.domain?.toLowerCase().includes(query)
+      );
+    }
+
+    // Apply sorting
+    const sorted = [...filtered].sort((a, b) => {
+      switch (sortBy) {
+        case 'modified':
+          return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+        case 'created':
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        case 'name':
+          return a.name.localeCompare(b.name);
+        default:
+          return 0;
+      }
+    });
+
+    return sorted;
+  }, [projects, searchQuery, sortBy]);
+
+  const handleCreateProject = () => {
+    if (!newProjectName.trim()) return;
+
+    const id = addProject(
+      newProjectName.trim(),
+      newProjectDescription.trim() || undefined,
+      newProjectDomain.trim() || undefined
+    );
+
+    // Initialize the project store with the new project
+    initializeNewProject(
+      id,
+      newProjectName.trim(),
+      newProjectDescription.trim() || undefined,
+      newProjectDomain.trim() || undefined
+    );
+
+    // Reset form
+    setNewProjectName('');
+    setNewProjectDescription('');
+    setNewProjectDomain('');
+    setShowNewProjectDialog(false);
+
+    // Navigate to the new project
+    router.push(`/project/${id}`);
+  };
+
+  // Show loading state during hydration
+  if (!isHydrated) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-gray-500">Loading...</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden">
-      <Header />
-      <div className="flex-1 flex overflow-hidden">
-        {/* Left Panel */}
-        <div
-          className={cn(
-            'transition-all duration-300 ease-in-out overflow-hidden',
-            leftPanelOpen ? 'w-72' : 'w-0'
-          )}
-        >
-          <LeftPanel />
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-emerald-500 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-lg">CF</span>
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">CocoonFlow</h1>
+                <p className="text-sm text-gray-500">Semantic Cocoon Planner</p>
+              </div>
+            </div>
+            <Button onClick={() => setShowNewProjectDialog(true)} className="gap-2">
+              <Plus className="w-4 h-4" />
+              New Project
+            </Button>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Search and Sort Controls */}
+        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Input
+              placeholder="Search projects..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+          <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
+            <SelectTrigger className="w-full sm:w-48">
+              <ArrowUpDown className="w-4 h-4 mr-2" />
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="modified">Last modified</SelectItem>
+              <SelectItem value="created">Date created</SelectItem>
+              <SelectItem value="name">Name</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
-        {/* Canvas */}
-        <div className="flex-1 overflow-hidden">
-          <Canvas />
-        </div>
+        {/* Projects Grid */}
+        {filteredProjects.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredProjects.map((project) => (
+              <ProjectCard key={project.id} project={project} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-16">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <FolderOpen className="w-8 h-8 text-gray-400" />
+            </div>
+            {searchQuery ? (
+              <>
+                <h3 className="text-lg font-medium text-gray-900 mb-1">No projects found</h3>
+                <p className="text-gray-500 mb-4">
+                  No projects match your search &quot;{searchQuery}&quot;
+                </p>
+                <Button variant="outline" onClick={() => setSearchQuery('')}>
+                  Clear search
+                </Button>
+              </>
+            ) : (
+              <>
+                <h3 className="text-lg font-medium text-gray-900 mb-1">No projects yet</h3>
+                <p className="text-gray-500 mb-4">
+                  Create your first semantic cocoon project to get started
+                </p>
+                <Button onClick={() => setShowNewProjectDialog(true)} className="gap-2">
+                  <Plus className="w-4 h-4" />
+                  Create Project
+                </Button>
+              </>
+            )}
+          </div>
+        )}
 
-        {/* Right Panel */}
-        <div
-          className={cn(
-            'transition-all duration-300 ease-in-out overflow-hidden',
-            rightPanelOpen ? 'w-80' : 'w-0'
-          )}
-        >
-          <RightPanel />
-        </div>
-      </div>
+        {/* Stats Footer */}
+        {projects.length > 0 && (
+          <div className="mt-8 text-center text-sm text-gray-500">
+            {projects.length} {projects.length === 1 ? 'project' : 'projects'} total
+          </div>
+        )}
+      </main>
 
-      {/* Modals */}
-      <ExportModal />
-      <ImportModal />
+      {/* New Project Dialog */}
+      <Dialog open={showNewProjectDialog} onOpenChange={setShowNewProjectDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Create New Project</DialogTitle>
+            <DialogDescription>
+              Start a new semantic cocoon project for your website.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="project-name">Project Name *</Label>
+              <Input
+                id="project-name"
+                placeholder="My SEO Project"
+                value={newProjectName}
+                onChange={(e) => setNewProjectName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && newProjectName.trim()) {
+                    handleCreateProject();
+                  }
+                }}
+                autoFocus
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="project-domain">Domain (optional)</Label>
+              <Input
+                id="project-domain"
+                placeholder="example.com"
+                value={newProjectDomain}
+                onChange={(e) => setNewProjectDomain(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="project-description">Description (optional)</Label>
+              <Textarea
+                id="project-description"
+                placeholder="Brief description of your project..."
+                value={newProjectDescription}
+                onChange={(e) => setNewProjectDescription(e.target.value)}
+                rows={3}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowNewProjectDialog(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleCreateProject} disabled={!newProjectName.trim()}>
+              Create Project
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
