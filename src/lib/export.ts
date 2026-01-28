@@ -53,13 +53,41 @@ export function exportToCSV(nodes: CocoonNode[]): string {
 }
 
 export function exportToXMLSitemap(nodes: CocoonNode[], domain: string): string {
-  const publishedNodes = nodes.filter((n) => n.data.status === 'published' && n.data.slug);
+  // Exclude navpage from sitemap (no SEO interest)
+  const publishedNodes = nodes.filter(
+    (n) => n.data.status === 'published' && n.data.slug && n.data.nodeType !== 'navpage'
+  );
+
+  const getPriority = (nodeType: string): string => {
+    switch (nodeType) {
+      case 'homepage': return '1.0';
+      case 'pillar': return '1.0';
+      case 'category': return '0.9';
+      case 'cluster': return '0.8';
+      case 'product': return '0.8';
+      case 'blog': return '0.7';
+      case 'supporting': return '0.6';
+      default: return '0.5';
+    }
+  };
+
+  const getChangefreq = (nodeType: string): string => {
+    switch (nodeType) {
+      case 'homepage': return 'daily';
+      case 'pillar': return 'weekly';
+      case 'category': return 'weekly';
+      case 'blog': return 'weekly';
+      case 'cluster': return 'monthly';
+      case 'product': return 'monthly';
+      default: return 'monthly';
+    }
+  };
 
   const urls = publishedNodes
     .map((node) => {
       const loc = `${domain}${node.data.slug}`;
-      const priority = node.data.nodeType === 'pillar' ? '1.0' : node.data.nodeType === 'cluster' ? '0.8' : '0.6';
-      const changefreq = node.data.nodeType === 'pillar' ? 'weekly' : 'monthly';
+      const priority = getPriority(node.data.nodeType);
+      const changefreq = getChangefreq(node.data.nodeType);
 
       return `  <url>
     <loc>${loc}</loc>

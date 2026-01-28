@@ -11,6 +11,11 @@ import {
   ExternalLink,
   AlertTriangle,
   MoreVertical,
+  Home,
+  Package,
+  FolderOpen,
+  Navigation,
+  Newspaper,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -38,36 +43,76 @@ interface CustomNodeProps {
   selected?: boolean;
 }
 
-const nodeTypeConfig: Record<NodeType, { icon: React.ElementType; color: string; bgColor: string; borderColor: string }> = {
+const nodeTypeConfig: Record<NodeType, { icon: React.ElementType; color: string; bgColor: string; borderColor: string; titleBgColor: string }> = {
   pillar: {
     icon: Target,
     color: 'text-blue-600',
     bgColor: 'bg-blue-50',
     borderColor: 'border-blue-500',
+    titleBgColor: 'bg-blue-100',
   },
   cluster: {
     icon: Layers,
     color: 'text-emerald-600',
     bgColor: 'bg-emerald-50',
     borderColor: 'border-emerald-500',
+    titleBgColor: 'bg-emerald-100',
   },
   supporting: {
     icon: FileText,
     color: 'text-gray-600',
     bgColor: 'bg-gray-50',
     borderColor: 'border-gray-400',
+    titleBgColor: 'bg-gray-100',
   },
   external: {
     icon: ExternalLink,
     color: 'text-purple-600',
     bgColor: 'bg-purple-50',
     borderColor: 'border-purple-500',
+    titleBgColor: 'bg-purple-100',
   },
   orphan: {
     icon: AlertTriangle,
     color: 'text-red-600',
     bgColor: 'bg-red-50',
     borderColor: 'border-red-500',
+    titleBgColor: 'bg-red-100',
+  },
+  homepage: {
+    icon: Home,
+    color: 'text-indigo-600',
+    bgColor: 'bg-indigo-50',
+    borderColor: 'border-indigo-500',
+    titleBgColor: 'bg-indigo-100',
+  },
+  product: {
+    icon: Package,
+    color: 'text-amber-600',
+    bgColor: 'bg-amber-50',
+    borderColor: 'border-amber-500',
+    titleBgColor: 'bg-amber-100',
+  },
+  category: {
+    icon: FolderOpen,
+    color: 'text-cyan-600',
+    bgColor: 'bg-cyan-50',
+    borderColor: 'border-cyan-500',
+    titleBgColor: 'bg-cyan-100',
+  },
+  navpage: {
+    icon: Navigation,
+    color: 'text-slate-500',
+    bgColor: 'bg-slate-50',
+    borderColor: 'border-slate-400',
+    titleBgColor: 'bg-slate-100',
+  },
+  blog: {
+    icon: Newspaper,
+    color: 'text-rose-600',
+    bgColor: 'bg-rose-50',
+    borderColor: 'border-rose-500',
+    titleBgColor: 'bg-rose-100',
   },
 };
 
@@ -79,8 +124,10 @@ const statusConfig: Record<string, { label: string; color: string }> = {
   'needs-update': { label: 'Needs Update', color: 'bg-red-100 text-red-700' },
 };
 
+const statusOrder: ContentStatus[] = ['planned', 'draft', 'review', 'published', 'needs-update'];
+
 function CustomNode({ id, data, selected }: CustomNodeProps) {
-  const { deleteNode, duplicateNode } = useProjectStore();
+  const { deleteNode, duplicateNode, updateNode } = useProjectStore();
   const { setSelectedNodeId } = useUIStore();
 
   const nodeType = data.nodeType || 'supporting';
@@ -102,11 +149,17 @@ function CustomNode({ id, data, selected }: CustomNodeProps) {
     setSelectedNodeId(id);
   };
 
+  const handleStatusChange = (newStatus: ContentStatus) => {
+    updateNode(id, { status: newStatus });
+  };
+
+  const slug = data.slug as string | undefined;
+
   return (
     <div
       onClick={handleSelect}
       className={cn(
-        'min-w-[220px] max-w-[280px] rounded-lg border-2 shadow-md transition-all',
+        'min-w-[220px] max-w-[280px] rounded-lg border-2 shadow-md transition-all overflow-hidden',
         config.bgColor,
         config.borderColor,
         selected && 'ring-2 ring-blue-400 ring-offset-2',
@@ -124,7 +177,7 @@ function CustomNode({ id, data, selected }: CustomNodeProps) {
         <div className="flex items-center gap-2">
           <Icon className={cn('w-4 h-4', config.color)} />
           <span className={cn('text-xs font-semibold uppercase tracking-wide', config.color)}>
-            {nodeType}
+            {nodeType === 'navpage' ? 'Nav Page' : nodeType}
           </span>
         </div>
         <DropdownMenu>
@@ -140,34 +193,56 @@ function CustomNode({ id, data, selected }: CustomNodeProps) {
         </DropdownMenu>
       </div>
 
-      {/* Content */}
-      <div className="p-3 space-y-2">
-        <h3 className="font-semibold text-gray-900 leading-tight line-clamp-2">
+      {/* Title Section with colored background */}
+      <div className={cn('px-3 py-2 border-b', config.titleBgColor, config.borderColor)}>
+        <h3 className={cn('font-semibold leading-tight line-clamp-2', config.color)}>
           {data.title || 'Untitled Page'}
         </h3>
+        {slug && (
+          <p className="text-xs text-gray-500 mt-1 truncate font-mono">
+            /{slug}
+          </p>
+        )}
+      </div>
 
+      {/* Content */}
+      <div className="p-3 space-y-2">
         {data.primaryKeyword && (
-          <div className="flex items-center gap-1 text-sm text-gray-600">
-            <span className="text-gray-400">Keyword:</span>
-            <span className="font-medium truncate">{data.primaryKeyword}</span>
+          <div className="text-xs text-gray-600 truncate">
+            <span className="text-gray-400">Keyword: </span>
+            <span className="font-medium">{data.primaryKeyword}</span>
           </div>
         )}
 
-        {(data.wordCountTarget || data.wordCountActual) && (
-          <div className="text-xs text-gray-500">
-            {data.wordCountActual ? `${data.wordCountActual.toLocaleString()} words` : `Target: ${data.wordCountTarget?.toLocaleString()} words`}
-          </div>
-        )}
-
-        <div className="flex items-center gap-2 pt-1">
-          <Badge variant="secondary" className={cn('text-xs', status.color)}>
-            {status.label}
-          </Badge>
-          {data.tags?.slice(0, 2).map((tag) => (
-            <Badge key={tag} variant="outline" className="text-xs">
-              {tag}
-            </Badge>
-          ))}
+        {/* Clickable Status Badge */}
+        <div className="pt-1">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                onClick={(e) => e.stopPropagation()}
+                className="focus:outline-none"
+              >
+                <Badge
+                  variant="secondary"
+                  className={cn('text-xs cursor-pointer hover:opacity-80 transition-opacity', status.color)}
+                >
+                  {status.label}
+                </Badge>
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" onClick={(e) => e.stopPropagation()}>
+              {statusOrder.map((s) => (
+                <DropdownMenuItem
+                  key={s}
+                  onClick={() => handleStatusChange(s)}
+                  className={cn(data.status === s && 'bg-gray-100')}
+                >
+                  <span className={cn('w-2 h-2 rounded-full mr-2', statusConfig[s].color.split(' ')[0])} />
+                  {statusConfig[s].label}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 

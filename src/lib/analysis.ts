@@ -8,12 +8,18 @@ export function analyzeCocoon(nodes: CocoonNode[], edges: CocoonEdge[]): CocoonA
     supporting: nodes.filter((n) => n.data.nodeType === 'supporting').length,
     external: nodes.filter((n) => n.data.nodeType === 'external').length,
     orphan: 0,
+    homepage: nodes.filter((n) => n.data.nodeType === 'homepage').length,
+    product: nodes.filter((n) => n.data.nodeType === 'product').length,
+    category: nodes.filter((n) => n.data.nodeType === 'category').length,
+    navpage: nodes.filter((n) => n.data.nodeType === 'navpage').length,
+    blog: nodes.filter((n) => n.data.nodeType === 'blog').length,
   };
 
-  // Find orphan nodes (no incoming edges, excluding pillars)
+  // Find orphan nodes (no incoming edges, excluding pillars, homepage, external, and navpage)
   const nodesWithIncoming = new Set(edges.map((e) => e.target));
+  const excludedFromOrphan = ['pillar', 'external', 'homepage', 'navpage'];
   const orphanNodes = nodes.filter(
-    (n) => n.data.nodeType !== 'pillar' && n.data.nodeType !== 'external' && !nodesWithIncoming.has(n.id)
+    (n) => !excludedFromOrphan.includes(n.data.nodeType) && !nodesWithIncoming.has(n.id)
   );
   nodeCount.orphan = orphanNodes.length;
 
@@ -76,9 +82,10 @@ export function analyzeCocoon(nodes: CocoonNode[], edges: CocoonEdge[]): CocoonA
     });
   }
 
-  // Check for nodes without keywords
+  // Check for nodes without keywords (excluding external and navpage which have no SEO interest)
+  const excludedFromKeywordCheck = ['external', 'navpage'];
   const nodesWithoutKeywords = nodes.filter(
-    (n) => n.data.nodeType !== 'external' && !n.data.primaryKeyword
+    (n) => !excludedFromKeywordCheck.includes(n.data.nodeType) && !n.data.primaryKeyword
   );
   if (nodesWithoutKeywords.length > 0) {
     warnings.push({

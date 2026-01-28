@@ -23,9 +23,14 @@ interface NodePropertiesProps {
 }
 
 const nodeTypes: { value: NodeType; label: string }[] = [
+  { value: 'homepage', label: 'Homepage' },
   { value: 'pillar', label: 'Pillar Page' },
+  { value: 'category', label: 'Category' },
   { value: 'cluster', label: 'Cluster Page' },
+  { value: 'product', label: 'Product' },
+  { value: 'blog', label: 'Blog Article' },
   { value: 'supporting', label: 'Supporting Page' },
+  { value: 'navpage', label: 'Nav Page' },
   { value: 'external', label: 'External Link' },
 ];
 
@@ -44,6 +49,18 @@ const contentStatuses: { value: ContentStatus; label: string }[] = [
   { value: 'needs-update', label: 'Needs Update' },
 ];
 
+// Convert text to URL-friendly slug
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // Remove accents
+    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-') // Replace multiple hyphens with single
+    .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
+}
+
 export default function NodeProperties({ node }: NodePropertiesProps) {
   const { updateNode } = useProjectStore();
   const [newTag, setNewTag] = useState('');
@@ -51,6 +68,11 @@ export default function NodeProperties({ node }: NodePropertiesProps) {
 
   const handleUpdate = (field: string, value: unknown) => {
     updateNode(node.id, { [field]: value });
+  };
+
+  const handleSlugChange = (value: string) => {
+    const slugified = slugify(value);
+    handleUpdate('slug', slugified);
   };
 
   const handleAddTag = () => {
@@ -134,12 +156,16 @@ export default function NodeProperties({ node }: NodePropertiesProps) {
 
           <div className="space-y-2">
             <Label htmlFor="slug">URL Slug</Label>
-            <Input
-              id="slug"
-              value={node.data.slug || ''}
-              onChange={(e) => handleUpdate('slug', e.target.value)}
-              placeholder="/your-page-url"
-            />
+            <div className="flex items-center">
+              <span className="text-gray-400 text-sm mr-1">/</span>
+              <Input
+                id="slug"
+                value={node.data.slug || ''}
+                onChange={(e) => handleSlugChange(e.target.value)}
+                placeholder="your-page-url"
+                className="font-mono text-sm"
+              />
+            </div>
           </div>
         </div>
       </div>

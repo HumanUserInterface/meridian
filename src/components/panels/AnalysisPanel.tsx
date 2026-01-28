@@ -14,6 +14,11 @@ import {
   FileText,
   Link,
   TrendingUp,
+  Home,
+  Package,
+  FolderOpen,
+  Navigation,
+  Newspaper,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -33,12 +38,18 @@ export default function AnalysisPanel() {
       supporting: nodes.filter((n) => n.data.nodeType === 'supporting').length,
       external: nodes.filter((n) => n.data.nodeType === 'external').length,
       orphan: 0,
+      homepage: nodes.filter((n) => n.data.nodeType === 'homepage').length,
+      product: nodes.filter((n) => n.data.nodeType === 'product').length,
+      category: nodes.filter((n) => n.data.nodeType === 'category').length,
+      navpage: nodes.filter((n) => n.data.nodeType === 'navpage').length,
+      blog: nodes.filter((n) => n.data.nodeType === 'blog').length,
     };
 
-    // Find orphan nodes (no incoming edges)
+    // Find orphan nodes (no incoming edges, excluding pillar, homepage, external, navpage)
     const nodesWithIncoming = new Set(edges.map((e) => e.target));
+    const excludedFromOrphan = ['pillar', 'external', 'homepage', 'navpage'];
     const orphanNodes = nodes.filter(
-      (n) => n.data.nodeType !== 'pillar' && !nodesWithIncoming.has(n.id)
+      (n) => !excludedFromOrphan.includes(n.data.nodeType) && !nodesWithIncoming.has(n.id)
     );
     nodeCount.orphan = orphanNodes.length;
 
@@ -101,9 +112,10 @@ export default function AnalysisPanel() {
       });
     }
 
-    // Check for nodes without keywords
+    // Check for nodes without keywords (excluding external and navpage)
+    const excludedFromKeywordCheck = ['external', 'navpage'];
     const nodesWithoutKeywords = nodes.filter(
-      (n) => n.data.nodeType !== 'external' && !n.data.primaryKeyword
+      (n) => !excludedFromKeywordCheck.includes(n.data.nodeType) && !n.data.primaryKeyword
     );
     if (nodesWithoutKeywords.length > 0) {
       warnings.push({
@@ -168,6 +180,15 @@ export default function AnalysisPanel() {
       <div>
         <h4 className="font-medium text-gray-800 mb-3">Content Structure</h4>
         <div className="space-y-2">
+          {analysis.nodeCount.homepage > 0 && (
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Home className="w-4 h-4 text-indigo-600" />
+                <span className="text-sm">Homepage</span>
+              </div>
+              <Badge variant="secondary">{analysis.nodeCount.homepage}</Badge>
+            </div>
+          )}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Target className="w-4 h-4 text-blue-600" />
@@ -175,6 +196,15 @@ export default function AnalysisPanel() {
             </div>
             <Badge variant="secondary">{analysis.nodeCount.pillar}</Badge>
           </div>
+          {analysis.nodeCount.category > 0 && (
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <FolderOpen className="w-4 h-4 text-cyan-600" />
+                <span className="text-sm">Categories</span>
+              </div>
+              <Badge variant="secondary">{analysis.nodeCount.category}</Badge>
+            </div>
+          )}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Layers className="w-4 h-4 text-emerald-600" />
@@ -182,6 +212,24 @@ export default function AnalysisPanel() {
             </div>
             <Badge variant="secondary">{analysis.nodeCount.cluster}</Badge>
           </div>
+          {analysis.nodeCount.product > 0 && (
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Package className="w-4 h-4 text-amber-600" />
+                <span className="text-sm">Products</span>
+              </div>
+              <Badge variant="secondary">{analysis.nodeCount.product}</Badge>
+            </div>
+          )}
+          {analysis.nodeCount.blog > 0 && (
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Newspaper className="w-4 h-4 text-rose-600" />
+                <span className="text-sm">Blog Articles</span>
+              </div>
+              <Badge variant="secondary">{analysis.nodeCount.blog}</Badge>
+            </div>
+          )}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <FileText className="w-4 h-4 text-gray-600" />
@@ -189,6 +237,15 @@ export default function AnalysisPanel() {
             </div>
             <Badge variant="secondary">{analysis.nodeCount.supporting}</Badge>
           </div>
+          {analysis.nodeCount.navpage > 0 && (
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Navigation className="w-4 h-4 text-slate-500" />
+                <span className="text-sm">Nav Pages</span>
+              </div>
+              <Badge variant="secondary">{analysis.nodeCount.navpage}</Badge>
+            </div>
+          )}
           {analysis.nodeCount.orphan > 0 && (
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">

@@ -1,5 +1,5 @@
 // Node Types
-export type NodeType = 'pillar' | 'cluster' | 'supporting' | 'external' | 'orphan';
+export type NodeType = 'pillar' | 'cluster' | 'supporting' | 'external' | 'orphan' | 'homepage' | 'product' | 'category' | 'navpage' | 'blog';
 
 export type SearchIntent = 'informational' | 'navigational' | 'commercial' | 'transactional';
 
@@ -82,6 +82,11 @@ export interface CocoonAnalysis {
     supporting: number;
     external: number;
     orphan: number;
+    homepage: number;
+    product: number;
+    category: number;
+    navpage: number;
+    blog: number;
   };
   linkCount: number;
   avgLinksPerNode: number;

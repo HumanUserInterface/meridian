@@ -43,18 +43,32 @@ src/
 ## Key Concepts
 
 ### Node Types
-- **Pillar**: Main topic page (blue) - center of the cocoon
-- **Cluster**: Subtopic pages (green) - link to/from pillar
-- **Supporting**: Long-tail content (gray) - provides depth
-- **External**: External link references (purple)
-- **Orphan**: Pages without incoming links (red border) - auto-detected
+| Type | Color | Icon | Description |
+|------|-------|------|-------------|
+| **Homepage** | Indigo | Home | Main site entry point |
+| **Pillar** | Blue | Target | Main topic page - center of the cocoon |
+| **Category** | Cyan | FolderOpen | Category/collection pages |
+| **Cluster** | Emerald | Layers | Subtopic pages - link to/from pillar |
+| **Product** | Amber | Package | Product pages |
+| **Blog** | Rose | Newspaper | Blog articles |
+| **Supporting** | Gray | FileText | Long-tail content - provides depth |
+| **NavPage** | Slate | Navigation | Non-SEO pages (contact, about, team) |
+| **External** | Purple | ExternalLink | External link references |
+| **Orphan** | Red | AlertTriangle | Pages without incoming links - auto-detected |
 
 ### Edge/Link Types
-- **Contextual**: In-content link (blue)
-- **Navigation**: Menu/nav link (green)
-- **Related**: "Related posts" section (purple)
-- **Breadcrumb**: Breadcrumb link (amber)
-- **CTA**: Call-to-action link (red)
+| Label | Type | Color | Description |
+|-------|------|-------|-------------|
+| CTX | Contextual | Blue | In-content link |
+| NAV | Navigation | Green | Menu/nav link |
+| REL | Related | Purple | "Related posts" section |
+| BC | Breadcrumb | Amber | Breadcrumb link |
+| CTA | Call to Action | Red | Call-to-action link |
+
+### Special Node Behaviors
+- **NavPage** nodes are excluded from orphan detection and keyword warnings (no SEO interest)
+- **NavPage** nodes are excluded from XML sitemap exports
+- **Homepage** gets highest sitemap priority (1.0) and daily changefreq
 
 ### Content Status Flow
 `planned` → `draft` → `review` → `published` → `needs-update`
@@ -86,6 +100,21 @@ npm run lint     # ESLint
 - Nodes use `type: 'cocoonNode'`, edges use `type: 'cocoonEdge'`
 - Data interfaces extend `Record<string, unknown>` for RF compatibility
 
+### Node Card Design
+- Header: Node type icon + label + actions menu
+- Title section: Colored background matching node type, shows page title and /slug
+- Content: Primary keyword and clickable status badge (dropdown to change status)
+
+### Edge Interaction
+- Click on edge label (CTX, NAV, etc.) to open dropdown and change link type
+- Select edge and press Delete/Backspace to remove
+- Dashed lines indicate planned links, solid lines indicate published
+
+### URL Slug Auto-formatting
+- Automatically converts spaces to hyphens
+- Converts to lowercase and removes accents
+- Removes special characters
+
 ### LocalStorage Persistence
 - Project auto-saves via Zustand persist middleware
 - Key: `cocoonflow-project`
@@ -102,7 +131,7 @@ npm run lint     # ESLint
 ### Phase 2 - SEO Enhancement
 - [ ] Keyword management with volume/difficulty
 - [ ] URL structure planner with depth warnings
-- [ ] XML sitemap export with priorities
+- [x] XML sitemap export with priorities (implemented)
 - [ ] Keyword cannibalization detection
 
 ### Phase 3 - Collaboration

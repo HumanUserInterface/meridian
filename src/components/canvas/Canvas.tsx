@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useEffect } from 'react';
 import {
   ReactFlow,
   Background,
@@ -43,10 +43,30 @@ const nodeOptions: { type: NodeType; label: string; icon: React.ElementType }[] 
 ];
 
 function CanvasContent() {
-  const { nodes, edges, onNodesChange, onEdgesChange, onConnect, addNode } = useProjectStore();
-  const { showMinimap, clearSelection, setSelectedNodeId } = useUIStore();
+  const { nodes, edges, onNodesChange, onEdgesChange, onConnect, addNode, deleteEdge, deleteNode } = useProjectStore();
+  const { showMinimap, clearSelection, setSelectedNodeId, selectedEdgeId, selectedNodeId, setSelectedEdgeId } = useUIStore();
   const { screenToFlowPosition } = useReactFlow();
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
+
+  // Handle keyboard delete for selected edges/nodes
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Delete' || event.key === 'Backspace') {
+        // Don't delete if user is typing in an input
+        if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
+          return;
+        }
+
+        if (selectedEdgeId) {
+          deleteEdge(selectedEdgeId);
+          setSelectedEdgeId(null);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedEdgeId, deleteEdge, setSelectedEdgeId]);
 
   const handleAddNode = useCallback(
     (type: NodeType) => {

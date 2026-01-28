@@ -10,6 +10,13 @@ import {
 import { LinkType } from '@/types';
 import { cn } from '@/lib/utils';
 import { useUIStore } from '@/stores/uiStore';
+import { useProjectStore } from '@/stores/projectStore';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface CustomEdgeProps {
   id: string;
@@ -30,13 +37,15 @@ interface CustomEdgeProps {
   selected?: boolean;
 }
 
-const linkTypeConfig: Record<LinkType, { color: string; label: string }> = {
-  contextual: { color: '#3B82F6', label: 'CTX' },
-  navigation: { color: '#10B981', label: 'NAV' },
-  related: { color: '#8B5CF6', label: 'REL' },
-  breadcrumb: { color: '#F59E0B', label: 'BC' },
-  cta: { color: '#EF4444', label: 'CTA' },
+const linkTypeConfig: Record<LinkType, { color: string; label: string; fullLabel: string }> = {
+  contextual: { color: '#3B82F6', label: 'CTX', fullLabel: 'Contextual' },
+  navigation: { color: '#10B981', label: 'NAV', fullLabel: 'Navigation' },
+  related: { color: '#8B5CF6', label: 'REL', fullLabel: 'Related' },
+  breadcrumb: { color: '#F59E0B', label: 'BC', fullLabel: 'Breadcrumb' },
+  cta: { color: '#EF4444', label: 'CTA', fullLabel: 'Call to Action' },
 };
+
+const linkTypeOrder: LinkType[] = ['contextual', 'navigation', 'related', 'breadcrumb', 'cta'];
 
 function CustomEdge({
   id,
@@ -52,6 +61,7 @@ function CustomEdge({
   selected,
 }: CustomEdgeProps) {
   const { setSelectedEdgeId } = useUIStore();
+  const { updateEdge } = useProjectStore();
 
   const [edgePath, labelX, labelY] = getBezierPath({
     sourceX,
@@ -69,6 +79,10 @@ function CustomEdge({
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setSelectedEdgeId(id);
+  };
+
+  const handleLinkTypeChange = (newType: LinkType) => {
+    updateEdge(id, { linkType: newType });
   };
 
   return (
@@ -99,19 +113,43 @@ function CustomEdge({
             transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
             pointerEvents: 'all',
           }}
-          className={cn(
-            'px-2 py-0.5 rounded text-xs font-medium cursor-pointer transition-all',
-            'bg-white border shadow-sm',
-            selected && 'ring-2 ring-blue-400'
-          )}
-          onClick={handleClick}
+          className="nodrag nopan"
         >
-          <span style={{ color: config.color }}>{config.label}</span>
-          {data?.anchorText && (
-            <span className="ml-1 text-gray-500 truncate max-w-[100px] inline-block align-middle">
-              {data.anchorText}
-            </span>
-          )}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedEdgeId(id);
+                }}
+                className={cn(
+                  'px-2 py-0.5 rounded text-xs font-medium cursor-pointer transition-all',
+                  'bg-white border shadow-sm hover:shadow-md',
+                  selected && 'ring-2 ring-blue-400'
+                )}
+              >
+                <span style={{ color: config.color }}>{config.label}</span>
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="center" onClick={(e) => e.stopPropagation()}>
+              {linkTypeOrder.map((type) => {
+                const typeConfig = linkTypeConfig[type];
+                return (
+                  <DropdownMenuItem
+                    key={type}
+                    onClick={() => handleLinkTypeChange(type)}
+                    className={cn(linkType === type && 'bg-gray-100')}
+                  >
+                    <span
+                      className="w-2 h-2 rounded-full mr-2"
+                      style={{ backgroundColor: typeConfig.color }}
+                    />
+                    {typeConfig.fullLabel}
+                  </DropdownMenuItem>
+                );
+              })}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </EdgeLabelRenderer>
     </>

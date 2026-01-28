@@ -17,6 +17,11 @@ import {
   ExternalLink,
   AlertTriangle,
   GripVertical,
+  Home,
+  Package,
+  FolderOpen,
+  Navigation,
+  Newspaper,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -26,12 +31,22 @@ const nodeTypeConfig: Record<NodeType, { icon: React.ElementType; color: string;
   supporting: { icon: FileText, color: 'text-gray-600', label: 'Supporting' },
   external: { icon: ExternalLink, color: 'text-purple-600', label: 'External' },
   orphan: { icon: AlertTriangle, color: 'text-red-600', label: 'Orphan' },
+  homepage: { icon: Home, color: 'text-indigo-600', label: 'Homepage' },
+  product: { icon: Package, color: 'text-amber-600', label: 'Product' },
+  category: { icon: FolderOpen, color: 'text-cyan-600', label: 'Category' },
+  navpage: { icon: Navigation, color: 'text-slate-500', label: 'Nav Page' },
+  blog: { icon: Newspaper, color: 'text-rose-600', label: 'Blog Article' },
 };
 
 const draggableNodes: { type: NodeType; label: string; icon: React.ElementType }[] = [
+  { type: 'homepage', label: 'Homepage', icon: Home },
   { type: 'pillar', label: 'Pillar Page', icon: Target },
+  { type: 'category', label: 'Category', icon: FolderOpen },
   { type: 'cluster', label: 'Cluster Page', icon: Layers },
+  { type: 'product', label: 'Product', icon: Package },
+  { type: 'blog', label: 'Blog Article', icon: Newspaper },
   { type: 'supporting', label: 'Supporting Page', icon: FileText },
+  { type: 'navpage', label: 'Nav Page', icon: Navigation },
   { type: 'external', label: 'External Link', icon: ExternalLink },
 ];
 
