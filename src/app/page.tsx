@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useProjectsStore } from '@/stores/projectsStore';
 import { useProjectStore } from '@/stores/projectStore';
 import { useUIStore } from '@/stores/uiStore';
-import { useHydration } from '@/lib/useHydration';
+import { useStoreHydration } from '@/lib/useHydration';
 import ProjectCard from '@/components/dashboard/ProjectCard';
 import Sidebar from '@/components/dashboard/Sidebar';
 import AIGeneratorModal from '@/components/modals/AIGeneratorModal';
@@ -52,7 +52,7 @@ export default function Dashboard() {
   const [newProjectName, setNewProjectName] = useState('');
   const [newProjectDescription, setNewProjectDescription] = useState('');
   const [newProjectDomain, setNewProjectDomain] = useState('');
-  const isHydrated = useHydration();
+  const isHydrated = useStoreHydration();
 
   // Migration logic: migrate old single-project data to new multi-project format
   useEffect(() => {

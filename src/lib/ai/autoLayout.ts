@@ -37,18 +37,24 @@ export function autoLayoutNodes(
 
   if (nodes.length === 0) return nodes;
 
-  // Define hierarchy levels based on node type
+  // Define hierarchy levels based on SEO cocoon structure
+  // Level 0: Homepage (entry point)
+  // Level 1: Pillar pages (main topics)
+  // Level 2: Clusters & Categories (subtopics)
+  // Level 3: Supporting & Blog (detailed content)
+  // Level 4: Products (transactional)
+  // Level 5: Nav pages, external, orphans
   const levelMap: Record<NodeType, number> = {
     homepage: 0,
-    pillar: 0,
-    cluster: 1,
-    category: 1,
-    supporting: 2,
-    blog: 2,
-    product: 3,
-    navpage: 3,
-    external: 4,
-    orphan: 4,
+    pillar: 1,
+    cluster: 2,
+    category: 2,
+    supporting: 3,
+    blog: 3,
+    product: 4,
+    navpage: 5,
+    external: 5,
+    orphan: 5,
   };
 
   // Group nodes by level

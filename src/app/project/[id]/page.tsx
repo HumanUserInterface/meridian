@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useProjectStore } from '@/stores/projectStore';
 import { useProjectsStore } from '@/stores/projectsStore';
 import { useUIStore } from '@/stores/uiStore';
-import { useHydration } from '@/lib/useHydration';
+import { useStoreHydration } from '@/lib/useHydration';
 import Header from '@/components/Header';
 import Canvas from '@/components/canvas/Canvas';
 import LeftPanel from '@/components/panels/LeftPanel';
@@ -21,7 +21,7 @@ export default function ProjectEditor() {
   const params = useParams();
   const router = useRouter();
   const projectId = params.id as string;
-  const isHydrated = useHydration();
+  const isHydrated = useStoreHydration();
 
   const { loadProject, currentProjectId, nodes, edges, project } = useProjectStore();
   const { getProject, updateProjectMeta, projects } = useProjectsStore();

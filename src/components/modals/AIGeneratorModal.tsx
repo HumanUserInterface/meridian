@@ -7,6 +7,7 @@ import { useAIGeneratorStore } from '@/stores/aiGeneratorStore';
 import { useProjectStore } from '@/stores/projectStore';
 import { useProjectsStore } from '@/stores/projectsStore';
 import { AI_CONFIG, PageCountOption } from '@/lib/ai/types';
+import { Project } from '@/types';
 import { autoLayoutNodes } from '@/lib/ai/autoLayout';
 
 import {
@@ -109,17 +110,44 @@ export default function AIGeneratorModal({ mode }: AIGeneratorModalProps) {
           input.domain || undefined
         );
 
-        initializeNewProject(
+        // Auto-layout the generated nodes
+        const layoutedNodes = autoLayoutNodes(result.nodes, result.edges);
+
+        // Initialize the project with the actual nodes/edges
+        // Use getState() to avoid stale closures
+        const store = useProjectStore.getState();
+
+        // Set up the project data
+        const now = new Date().toISOString();
+        const newProject: Project = {
+          id: projectId,
+          name: input.seedKeyword,
+          description: input.businessDescription,
+          domain: input.domain || '',
+          createdAt: now,
+          updatedAt: now,
+          settings: store.project.settings,
+          keywords: [],
+        };
+
+        // Save directly to localStorage first to ensure it's persisted
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(`meridian-project-${projectId}`, JSON.stringify({
+            project: newProject,
+            nodes: layoutedNodes,
+            edges: result.edges,
+          }));
+        }
+
+        // Then update the store state
+        store.initializeNewProject(
           projectId,
           input.seedKeyword,
           input.businessDescription,
           input.domain || undefined
         );
-
-        // Auto-layout the generated nodes
-        const layoutedNodes = autoLayoutNodes(result.nodes, result.edges);
-        setNodes(layoutedNodes);
-        setEdges(result.edges);
+        store.setNodes(layoutedNodes);
+        store.setEdges(result.edges);
 
         // Auto-redirect after short delay
         setTimeout(() => {
@@ -130,8 +158,9 @@ export default function AIGeneratorModal({ mode }: AIGeneratorModalProps) {
         }, 1500);
       } else {
         // Editor mode: Add to current project
-        const currentNodes = useProjectStore.getState().nodes;
-        const currentEdges = useProjectStore.getState().edges;
+        const store = useProjectStore.getState();
+        const currentNodes = store.nodes;
+        const currentEdges = store.edges;
 
         // Auto-layout new nodes
         const layoutedNewNodes = autoLayoutNodes(result.nodes, result.edges);
@@ -149,8 +178,10 @@ export default function AIGeneratorModal({ mode }: AIGeneratorModalProps) {
           },
         }));
 
-        setNodes([...currentNodes, ...offsetNodes]);
-        setEdges([...currentEdges, ...result.edges]);
+        store.setNodes([...currentNodes, ...offsetNodes]);
+        store.setEdges([...currentEdges, ...result.edges]);
+        // Force explicit save
+        store.saveProject();
 
         // Close modal after short delay
         setTimeout(() => {

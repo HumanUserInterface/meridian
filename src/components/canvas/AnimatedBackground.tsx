@@ -30,30 +30,52 @@ export default function AnimatedBackground({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Set canvas size
     const parent = canvas.parentElement;
-    if (parent) {
-      canvas.width = parent.clientWidth;
-      canvas.height = parent.clientHeight;
-    }
+    if (!parent) return;
 
-    const { width, height } = canvas;
+    // Function to update canvas size
+    const updateCanvasSize = () => {
+      const rect = parent.getBoundingClientRect();
+      // Use device pixel ratio for crisp rendering
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      canvas.style.width = `${rect.width}px`;
+      canvas.style.height = `${rect.height}px`;
+      ctx.scale(dpr, dpr);
+      return { width: rect.width, height: rect.height };
+    };
+
+    let dimensions = updateCanvasSize();
     const [tx, ty, zoom] = transform;
-    const scaledGap = gap * zoom;
 
     const draw = () => {
+      const { width, height } = dimensions;
+
+      // Reset transform before clearing (in case of dpr scaling)
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      const dpr = window.devicePixelRatio || 1;
+      ctx.scale(dpr, dpr);
+
       ctx.clearRect(0, 0, width, height);
 
-      const offsetX = ((tx % scaledGap) + scaledGap) % scaledGap;
-      const offsetY = ((ty % scaledGap) + scaledGap) % scaledGap;
+      // Fixed gap on screen - dots stay at consistent visual spacing
+      // The gap is fixed, we just offset based on the pan position
+      const screenGap = gap;
+
+      // Calculate offset based on transform (accounting for zoom)
+      // When panning, the dots should move with the canvas
+      const offsetX = ((tx / zoom) % screenGap + screenGap) % screenGap;
+      const offsetY = ((ty / zoom) % screenGap + screenGap) % screenGap;
 
       const baseColor = isDark ? 'rgba(80, 80, 95, 0.9)' : 'rgba(170, 170, 185, 0.9)';
       const activeColor = isDark ? 'rgba(120, 120, 150, 1)' : 'rgba(130, 130, 160, 1)';
       const time = Date.now();
 
-      for (let px = offsetX - scaledGap; px < width + scaledGap; px += scaledGap) {
-        for (let py = offsetY - scaledGap; py < height + scaledGap; py += scaledGap) {
-          let size = dotSize * Math.max(0.8, zoom);
+      // Draw dots at fixed screen intervals
+      for (let px = offsetX - screenGap; px < width + screenGap; px += screenGap) {
+        for (let py = offsetY - screenGap; py < height + screenGap; py += screenGap) {
+          let size = dotSize;
           let x = px;
           let y = py;
           let color = baseColor;
@@ -90,18 +112,16 @@ export default function AnimatedBackground({
 
     draw();
 
-    const handleResize = () => {
-      if (parent) {
-        canvas.width = parent.clientWidth;
-        canvas.height = parent.clientHeight;
-        draw();
-      }
-    };
+    // Use ResizeObserver to handle parent element size changes (e.g., sidebar collapse)
+    const resizeObserver = new ResizeObserver(() => {
+      dimensions = updateCanvasSize();
+      draw();
+    });
 
-    window.addEventListener('resize', handleResize);
+    resizeObserver.observe(parent);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      resizeObserver.disconnect();
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
