@@ -227,7 +227,15 @@ export async function createProject(
 
   console.log('Creating project for user:', user.id);
 
-  // Get the access token to manually set auth header
+  // Force refresh the session to get a fresh token
+  const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+  if (refreshError) {
+    console.error('Failed to refresh session:', refreshError.message);
+  } else {
+    console.log('Session refreshed, new expiry:', refreshData.session?.expires_at);
+  }
+
+  // Get the access token
   const { data: sessionData } = await supabase.auth.getSession();
   const accessToken = sessionData.session?.access_token;
 
