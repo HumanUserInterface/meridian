@@ -32,6 +32,7 @@ import {
   LayoutDashboard,
   User,
   LogOut,
+  Sparkles,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
@@ -56,6 +57,7 @@ export default function Header() {
     setExportModalOpen,
     setImportModalOpen,
     setSettingsModalOpen,
+    setAIGeneratorModalOpen,
   } = useUIStore();
 
   const [isEditingName, setIsEditingName] = useState(false);
@@ -227,6 +229,16 @@ export default function Header() {
         <Button variant="outline" size="sm" className="gap-2">
           <Share2 className="w-4 h-4" />
           Share
+        </Button>
+
+        <Button
+          variant="default"
+          size="sm"
+          className="gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white"
+          onClick={() => setAIGeneratorModalOpen(true)}
+        >
+          <Sparkles className="w-4 h-4" />
+          AI Generate
         </Button>
 
         <div className="w-px h-6 bg-border mx-1" />

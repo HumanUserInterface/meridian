@@ -14,6 +14,7 @@ interface UIState {
   importModalOpen: boolean;
   settingsModalOpen: boolean;
   keyboardShortcutsModalOpen: boolean;
+  aiGeneratorModalOpen: boolean;
 
   // View states
   showMinimap: boolean;
@@ -33,6 +34,7 @@ interface UIState {
   setImportModalOpen: (open: boolean) => void;
   setSettingsModalOpen: (open: boolean) => void;
   setKeyboardShortcutsModalOpen: (open: boolean) => void;
+  setAIGeneratorModalOpen: (open: boolean) => void;
 
   setShowMinimap: (show: boolean) => void;
   setShowAnalysisPanel: (show: boolean) => void;
@@ -48,6 +50,7 @@ export const useUIStore = create<UIState>((set) => ({
   importModalOpen: false,
   settingsModalOpen: false,
   keyboardShortcutsModalOpen: false,
+  aiGeneratorModalOpen: false,
   showMinimap: true,
   showAnalysisPanel: true,
 
@@ -74,6 +77,7 @@ export const useUIStore = create<UIState>((set) => ({
   setImportModalOpen: (open) => set({ importModalOpen: open }),
   setSettingsModalOpen: (open) => set({ settingsModalOpen: open }),
   setKeyboardShortcutsModalOpen: (open) => set({ keyboardShortcutsModalOpen: open }),
+  setAIGeneratorModalOpen: (open) => set({ aiGeneratorModalOpen: open }),
 
   setShowMinimap: (show) => set({ showMinimap: show }),
   setShowAnalysisPanel: (show) => set({ showAnalysisPanel: show }),

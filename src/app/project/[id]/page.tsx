@@ -12,6 +12,7 @@ import LeftPanel from '@/components/panels/LeftPanel';
 import RightPanel from '@/components/panels/RightPanel';
 import ExportModal from '@/components/modals/ExportModal';
 import ImportModal from '@/components/modals/ImportModal';
+import AIGeneratorModal from '@/components/modals/AIGeneratorModal';
 import { cn } from '@/lib/utils';
 
 export default function ProjectEditor() {
@@ -140,6 +141,7 @@ export default function ProjectEditor() {
       {/* Modals */}
       <ExportModal />
       <ImportModal />
+      <AIGeneratorModal mode="editor" />
     </div>
   );
 }

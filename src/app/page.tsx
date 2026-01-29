@@ -4,9 +4,11 @@ import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useProjectsStore } from '@/stores/projectsStore';
 import { useProjectStore } from '@/stores/projectStore';
+import { useUIStore } from '@/stores/uiStore';
 import { useHydration } from '@/lib/useHydration';
 import ProjectCard from '@/components/dashboard/ProjectCard';
 import Sidebar from '@/components/dashboard/Sidebar';
+import AIGeneratorModal from '@/components/modals/AIGeneratorModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -31,6 +33,7 @@ import {
   Search,
   FolderOpen,
   ArrowUpDown,
+  Sparkles,
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 
@@ -40,6 +43,7 @@ export default function Dashboard() {
   const router = useRouter();
   const { projects, addProject, migrated, setMigrated } = useProjectsStore();
   const { initializeNewProject } = useProjectStore();
+  const { setAIGeneratorModalOpen } = useUIStore();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('modified');
@@ -195,6 +199,14 @@ export default function Dashboard() {
             </div>
             <div className="flex items-center gap-2">
               <ThemeToggle />
+              <Button
+                variant="outline"
+                onClick={() => setAIGeneratorModalOpen(true)}
+                className="gap-2"
+              >
+                <Sparkles className="w-4 h-4 text-amber-500" />
+                Generate with AI
+              </Button>
               <Button onClick={() => setShowNewProjectDialog(true)} className="gap-2">
                 <Plus className="w-4 h-4" />
                 New Project
@@ -330,6 +342,9 @@ export default function Dashboard() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* AI Generator Modal */}
+      <AIGeneratorModal mode="dashboard" />
     </div>
   );
 }
