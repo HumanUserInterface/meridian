@@ -7,9 +7,10 @@ import EdgeProperties from './EdgeProperties';
 import AnalysisPanel from './AnalysisPanel';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { ChevronRight } from 'lucide-react';
 
 export default function RightPanel() {
-  const { selectedNodeId, selectedEdgeId } = useUIStore();
+  const { selectedNodeId, selectedEdgeId, toggleRightPanel } = useUIStore();
   const { nodes, edges } = useProjectStore();
 
   const selectedNode = selectedNodeId
@@ -20,7 +21,16 @@ export default function RightPanel() {
     : null;
 
   return (
-    <div className="h-full flex flex-col bg-background border-l">
+    <div className="h-full flex flex-col bg-background border-l relative">
+      {/* Collapse button */}
+      <button
+        onClick={toggleRightPanel}
+        className="absolute -left-3 top-1/2 -translate-y-1/2 z-10 w-6 h-12 bg-background border rounded-l-md shadow-sm hover:bg-accent transition-colors flex items-center justify-center"
+        title="Collapse panel"
+      >
+        <ChevronRight className="w-4 h-4 text-muted-foreground" />
+      </button>
+
       <Tabs defaultValue="properties" className="flex-1 flex flex-col">
         <TabsList className="mx-4 mt-4 grid grid-cols-2">
           <TabsTrigger value="properties">Properties</TabsTrigger>

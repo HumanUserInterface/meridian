@@ -22,6 +22,7 @@ import {
   FolderOpen,
   Navigation,
   Newspaper,
+  ChevronLeft,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -52,7 +53,7 @@ const draggableNodes: { type: NodeType; label: string; icon: React.ElementType }
 
 export default function LeftPanel() {
   const { nodes } = useProjectStore();
-  const { selectedNodeId, setSelectedNodeId } = useUIStore();
+  const { selectedNodeId, setSelectedNodeId, toggleLeftPanel } = useUIStore();
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredNodes = nodes.filter(
@@ -77,7 +78,16 @@ export default function LeftPanel() {
   };
 
   return (
-    <div className="h-full flex flex-col bg-background border-r">
+    <div className="h-full flex flex-col bg-background border-r relative">
+      {/* Collapse button */}
+      <button
+        onClick={toggleLeftPanel}
+        className="absolute -right-3 top-1/2 -translate-y-1/2 z-10 w-6 h-12 bg-background border rounded-r-md shadow-sm hover:bg-accent transition-colors flex items-center justify-center"
+        title="Collapse panel"
+      >
+        <ChevronLeft className="w-4 h-4 text-muted-foreground" />
+      </button>
+
       <div className="p-4 border-b">
         <h2 className="font-semibold text-foreground mb-3">Content Structure</h2>
         <div className="relative">

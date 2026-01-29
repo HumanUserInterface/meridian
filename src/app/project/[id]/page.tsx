@@ -15,6 +15,7 @@ import ImportModal from '@/components/modals/ImportModal';
 import AIGeneratorModal from '@/components/modals/AIGeneratorModal';
 import AIGenerationStatus from '@/components/AIGenerationStatus';
 import { cn } from '@/lib/utils';
+import { ChevronRight, ChevronLeft } from 'lucide-react';
 
 export default function ProjectEditor() {
   const params = useParams();
@@ -112,26 +113,48 @@ export default function ProjectEditor() {
   return (
     <div className="h-screen flex flex-col overflow-hidden">
       <Header />
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden relative">
         {/* Left Panel */}
         <div
           className={cn(
-            'transition-all duration-300 ease-in-out overflow-hidden',
+            'transition-all duration-300 ease-in-out overflow-hidden relative',
             leftPanelOpen ? 'w-72' : 'w-0'
           )}
         >
           <LeftPanel />
         </div>
 
+        {/* Left Panel Expand Button (visible when collapsed) */}
+        {!leftPanelOpen && (
+          <button
+            onClick={toggleLeftPanel}
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-20 w-6 h-12 bg-background border rounded-r-md shadow-md hover:bg-accent transition-colors flex items-center justify-center"
+            title="Expand left panel"
+          >
+            <ChevronRight className="w-4 h-4 text-muted-foreground" />
+          </button>
+        )}
+
         {/* Canvas */}
         <div className="flex-1 overflow-hidden">
           <Canvas />
         </div>
 
+        {/* Right Panel Expand Button (visible when collapsed) */}
+        {!rightPanelOpen && (
+          <button
+            onClick={toggleRightPanel}
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-20 w-6 h-12 bg-background border rounded-l-md shadow-md hover:bg-accent transition-colors flex items-center justify-center"
+            title="Expand right panel"
+          >
+            <ChevronLeft className="w-4 h-4 text-muted-foreground" />
+          </button>
+        )}
+
         {/* Right Panel */}
         <div
           className={cn(
-            'transition-all duration-300 ease-in-out overflow-hidden',
+            'transition-all duration-300 ease-in-out overflow-hidden relative',
             rightPanelOpen ? 'w-80' : 'w-0'
           )}
         >
