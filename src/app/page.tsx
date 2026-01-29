@@ -9,6 +9,7 @@ import { useHydration } from '@/lib/useHydration';
 import ProjectCard from '@/components/dashboard/ProjectCard';
 import Sidebar from '@/components/dashboard/Sidebar';
 import AIGeneratorModal from '@/components/modals/AIGeneratorModal';
+import AIGenerationStatus from '@/components/AIGenerationStatus';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -345,6 +346,9 @@ export default function Dashboard() {
 
       {/* AI Generator Modal */}
       <AIGeneratorModal mode="dashboard" />
+
+      {/* Floating AI Generation Status */}
+      <AIGenerationStatus />
     </div>
   );
 }

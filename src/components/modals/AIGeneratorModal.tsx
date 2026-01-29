@@ -1,11 +1,8 @@
 'use client';
 
-import { useState, useCallback, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useRef } from 'react';
 import { useUIStore } from '@/stores/uiStore';
-import { useProjectStore } from '@/stores/projectStore';
-import { useProjectsStore } from '@/stores/projectsStore';
-import { useAIGenerator, ParsedCSV } from '@/hooks/useAIGenerator';
+import { useAIGeneratorStore } from '@/stores/aiGeneratorStore';
 import { AI_CONFIG, PageCountOption } from '@/lib/ai/types';
 
 import {
@@ -35,18 +32,25 @@ import {
   Check,
   AlertCircle,
   Loader2,
+  Minimize2,
 } from 'lucide-react';
+
+interface ParsedCSV {
+  keywords: Array<{
+    term: string;
+    volume?: number;
+    difficulty?: number;
+    intent?: string;
+  }>;
+  count: number;
+}
 
 interface AIGeneratorModalProps {
   mode: 'dashboard' | 'editor';
 }
 
 export default function AIGeneratorModal({ mode }: AIGeneratorModalProps) {
-  const router = useRouter();
   const { aiGeneratorModalOpen, setAIGeneratorModalOpen } = useUIStore();
-  const { setNodes, setEdges, project } = useProjectStore();
-  const { addProject } = useProjectsStore();
-  const { initializeNewProject } = useProjectStore();
 
   const {
     isGenerating,
@@ -54,11 +58,10 @@ export default function AIGeneratorModal({ mode }: AIGeneratorModalProps) {
     progress,
     message,
     error,
-    generate,
+    startGeneration,
     cancel,
     reset,
-    parseCSV,
-  } = useAIGenerator();
+  } = useAIGeneratorStore();
 
   // Form state
   const [seedKeyword, setSeedKeyword] = useState('');
@@ -72,14 +75,23 @@ export default function AIGeneratorModal({ mode }: AIGeneratorModalProps) {
   const [csvData, setCsvData] = useState<ParsedCSV | null>(null);
   const [csvFileName, setCsvFileName] = useState('');
   const [isParsingCSV, setIsParsingCSV] = useState(false);
+  const [csvError, setCsvError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Reset form when modal closes
-  const handleClose = useCallback(() => {
-    if (isGenerating) {
-      cancel();
-    }
-    reset();
+  // Close modal (but keep generation running)
+  const handleClose = () => {
+    setAIGeneratorModalOpen(false);
+  };
+
+  // Cancel and close
+  const handleCancelAndClose = () => {
+    cancel();
+    resetForm();
+    setAIGeneratorModalOpen(false);
+  };
+
+  // Reset form fields
+  const resetForm = () => {
     setSeedKeyword('');
     setBusinessDescription('');
     setTargetPageCount(20);
@@ -88,8 +100,9 @@ export default function AIGeneratorModal({ mode }: AIGeneratorModalProps) {
     setLanguage('en');
     setCsvData(null);
     setCsvFileName('');
-    setAIGeneratorModalOpen(false);
-  }, [isGenerating, cancel, reset, setAIGeneratorModalOpen]);
+    setCsvError(null);
+    reset();
+  };
 
   // Handle CSV file selection
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -98,37 +111,56 @@ export default function AIGeneratorModal({ mode }: AIGeneratorModalProps) {
 
     setIsParsingCSV(true);
     setCsvFileName(file.name);
+    setCsvError(null);
 
-    const result = await parseCSV(file);
-    if (result) {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('/api/ai/parse-csv', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to parse CSV');
+      }
+
+      const result = await response.json();
       setCsvData(result);
+
       // Auto-adjust target count based on imported keywords
-      if (result.count > 0 && result.count > (targetPageCount === 'custom' ? parseInt(customPageCount) : targetPageCount)) {
-        // Find the next higher option or use custom
-        const nextOption = AI_CONFIG.defaultPageCounts.find(opt => opt >= result.count);
-        if (nextOption) {
-          setTargetPageCount(nextOption);
-        } else {
-          setTargetPageCount('custom');
-          setCustomPageCount(result.count.toString());
+      if (result.count > 0) {
+        const currentCount = targetPageCount === 'custom' ? parseInt(customPageCount) : targetPageCount;
+        if (result.count > currentCount) {
+          const nextOption = AI_CONFIG.defaultPageCounts.find(opt => opt >= result.count);
+          if (nextOption) {
+            setTargetPageCount(nextOption);
+          } else {
+            setTargetPageCount('custom');
+            setCustomPageCount(result.count.toString());
+          }
         }
       }
-    }
-    setIsParsingCSV(false);
-
-    // Reset file input
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+    } catch (err) {
+      setCsvError(err instanceof Error ? err.message : 'Failed to parse CSV');
+      setCsvData(null);
+    } finally {
+      setIsParsingCSV(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
-  // Handle generation
-  const handleGenerate = async () => {
+  // Handle generation start
+  const handleGenerate = () => {
     const pageCount = targetPageCount === 'custom'
       ? parseInt(customPageCount) || 20
       : targetPageCount;
 
-    const result = await generate({
+    startGeneration({
       seedKeyword,
       businessDescription,
       targetPageCount: pageCount,
@@ -136,55 +168,6 @@ export default function AIGeneratorModal({ mode }: AIGeneratorModalProps) {
       domain: domain || undefined,
       language,
     });
-
-    if (result) {
-      if (mode === 'dashboard') {
-        // Create new project with generated content
-        const projectId = addProject(
-          seedKeyword,
-          businessDescription,
-          domain || undefined
-        );
-
-        // Initialize project
-        initializeNewProject(
-          projectId,
-          seedKeyword,
-          businessDescription,
-          domain || undefined
-        );
-
-        // Set nodes and edges
-        setNodes(result.nodes);
-        setEdges(result.edges);
-
-        // Navigate to the new project
-        handleClose();
-        router.push(`/project/${projectId}`);
-      } else {
-        // Add to current project
-        const currentNodes = useProjectStore.getState().nodes;
-        const currentEdges = useProjectStore.getState().edges;
-
-        // Offset new nodes to avoid overlap
-        const offsetX = currentNodes.length > 0
-          ? Math.max(...currentNodes.map(n => n.position.x)) + 400
-          : 0;
-
-        const offsetNodes = result.nodes.map(node => ({
-          ...node,
-          position: {
-            x: node.position.x + offsetX,
-            y: node.position.y,
-          },
-        }));
-
-        setNodes([...currentNodes, ...offsetNodes]);
-        setEdges([...currentEdges, ...result.edges]);
-
-        handleClose();
-      }
-    }
   };
 
   const isFormValid = seedKeyword.trim() && businessDescription.trim();
@@ -234,28 +217,45 @@ export default function AIGeneratorModal({ mode }: AIGeneratorModalProps) {
               <p className="text-sm text-muted-foreground mt-1">{message}</p>
             </div>
 
-            <Progress value={progress * 100} className="h-2" />
+            {/* Progress bar with percentage */}
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Progress</span>
+                <span className="font-mono font-medium text-amber-500">{progress}%</span>
+              </div>
+              <Progress value={progress} className="h-3" />
+            </div>
 
+            {/* Stage indicators */}
             <div className="flex justify-center gap-2 text-sm text-muted-foreground">
               <span className={stage === 'research' || stage === 'build' || stage === 'link' || stage === 'complete' ? 'text-green-500' : ''}>
-                {stage === 'research' || stage === 'build' || stage === 'link' || stage === 'complete' ? <Check className="w-4 h-4 inline mr-1" /> : '○'} Research
+                {stage === 'build' || stage === 'link' || stage === 'complete' ? <Check className="w-4 h-4 inline mr-1" /> : stage === 'research' ? <Loader2 className="w-4 h-4 inline mr-1 animate-spin" /> : '○'} Research
               </span>
               <span>→</span>
               <span className={stage === 'build' || stage === 'link' || stage === 'complete' ? 'text-green-500' : ''}>
-                {stage === 'build' || stage === 'link' || stage === 'complete' ? <Check className="w-4 h-4 inline mr-1" /> : '○'} Build
+                {stage === 'link' || stage === 'complete' ? <Check className="w-4 h-4 inline mr-1" /> : stage === 'build' ? <Loader2 className="w-4 h-4 inline mr-1 animate-spin" /> : '○'} Build
               </span>
               <span>→</span>
               <span className={stage === 'link' || stage === 'complete' ? 'text-green-500' : ''}>
-                {stage === 'link' || stage === 'complete' ? <Check className="w-4 h-4 inline mr-1" /> : '○'} Link
+                {stage === 'complete' ? <Check className="w-4 h-4 inline mr-1" /> : stage === 'link' ? <Loader2 className="w-4 h-4 inline mr-1 animate-spin" /> : '○'} Link
               </span>
             </div>
 
-            <div className="flex justify-center">
-              <Button variant="outline" onClick={cancel} className="gap-2">
+            {/* Action buttons */}
+            <div className="flex justify-center gap-2">
+              <Button variant="outline" onClick={handleClose} className="gap-2">
+                <Minimize2 className="w-4 h-4" />
+                Minimize
+              </Button>
+              <Button variant="destructive" onClick={handleCancelAndClose} className="gap-2">
                 <X className="w-4 h-4" />
-                Cancel Generation
+                Cancel
               </Button>
             </div>
+
+            <p className="text-xs text-center text-muted-foreground">
+              You can minimize this dialog and continue working. Generation will continue in the background.
+            </p>
           </div>
         ) : (
           /* Input Form */
@@ -392,6 +392,9 @@ export default function AIGeneratorModal({ mode }: AIGeneratorModalProps) {
                   </div>
                 )}
               </div>
+              {csvError && (
+                <p className="text-xs text-destructive">{csvError}</p>
+              )}
             </div>
 
             {/* Advanced Options */}

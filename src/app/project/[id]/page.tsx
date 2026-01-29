@@ -13,6 +13,7 @@ import RightPanel from '@/components/panels/RightPanel';
 import ExportModal from '@/components/modals/ExportModal';
 import ImportModal from '@/components/modals/ImportModal';
 import AIGeneratorModal from '@/components/modals/AIGeneratorModal';
+import AIGenerationStatus from '@/components/AIGenerationStatus';
 import { cn } from '@/lib/utils';
 
 export default function ProjectEditor() {
@@ -142,6 +143,9 @@ export default function ProjectEditor() {
       <ExportModal />
       <ImportModal />
       <AIGeneratorModal mode="editor" />
+
+      {/* Floating AI Generation Status */}
+      <AIGenerationStatus />
     </div>
   );
 }
