@@ -6,6 +6,7 @@ import { useProjectsStore } from '@/stores/projectsStore';
 import { useProjectStore } from '@/stores/projectStore';
 import { useHydration } from '@/lib/useHydration';
 import ProjectCard from '@/components/dashboard/ProjectCard';
+import Sidebar from '@/components/dashboard/Sidebar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -177,19 +178,20 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-muted/30">
-      {/* Header */}
-      <header className="bg-background border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-emerald-500 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">M</span>
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-foreground">Meridian</h1>
-                <p className="text-sm text-muted-foreground">Semantic Cocoon Planner</p>
-              </div>
+    <div className="min-h-screen bg-muted/30 flex">
+      {/* Sidebar */}
+      <Sidebar />
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col min-h-screen">
+        {/* Top Bar */}
+        <header className="bg-background border-b sticky top-0 z-10">
+          <div className="px-6 py-4 flex items-center justify-between">
+            <div>
+              <h1 className="text-xl font-semibold text-foreground">Projects</h1>
+              <p className="text-sm text-muted-foreground">
+                Manage your semantic cocoon projects
+              </p>
             </div>
             <div className="flex items-center gap-2">
               <ThemeToggle />
@@ -199,79 +201,79 @@ export default function Dashboard() {
               </Button>
             </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Search and Sort Controls */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-6">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
-              placeholder="Search projects..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9"
-            />
-          </div>
-          <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
-            <SelectTrigger className="w-full sm:w-48">
-              <ArrowUpDown className="w-4 h-4 mr-2" />
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="modified">Last modified</SelectItem>
-              <SelectItem value="created">Date created</SelectItem>
-              <SelectItem value="name">Name</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Projects Grid */}
-        {filteredProjects.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredProjects.map((project) => (
-              <ProjectCard key={project.id} project={project} />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-16">
-            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-              <FolderOpen className="w-8 h-8 text-muted-foreground" />
+        {/* Content */}
+        <main className="flex-1 p-6">
+          {/* Search and Sort Controls */}
+          <div className="flex flex-col sm:flex-row gap-4 mb-6">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                placeholder="Search projects..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9"
+              />
             </div>
-            {searchQuery ? (
-              <>
-                <h3 className="text-lg font-medium text-foreground mb-1">No projects found</h3>
-                <p className="text-muted-foreground mb-4">
-                  No projects match your search &quot;{searchQuery}&quot;
-                </p>
-                <Button variant="outline" onClick={() => setSearchQuery('')}>
-                  Clear search
-                </Button>
-              </>
-            ) : (
-              <>
-                <h3 className="text-lg font-medium text-foreground mb-1">No projects yet</h3>
-                <p className="text-muted-foreground mb-4">
-                  Create your first semantic cocoon project to get started
-                </p>
-                <Button onClick={() => setShowNewProjectDialog(true)} className="gap-2">
-                  <Plus className="w-4 h-4" />
-                  Create Project
-                </Button>
-              </>
-            )}
+            <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
+              <SelectTrigger className="w-full sm:w-48">
+                <ArrowUpDown className="w-4 h-4 mr-2" />
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="modified">Last modified</SelectItem>
+                <SelectItem value="created">Date created</SelectItem>
+                <SelectItem value="name">Name</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-        )}
 
-        {/* Stats Footer */}
-        {projects.length > 0 && (
-          <div className="mt-8 text-center text-sm text-muted-foreground">
-            {projects.length} {projects.length === 1 ? 'project' : 'projects'} total
-          </div>
-        )}
-      </main>
+          {/* Projects Grid */}
+          {filteredProjects.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+              {filteredProjects.map((project) => (
+                <ProjectCard key={project.id} project={project} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-16">
+              <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                <FolderOpen className="w-8 h-8 text-muted-foreground" />
+              </div>
+              {searchQuery ? (
+                <>
+                  <h3 className="text-lg font-medium text-foreground mb-1">No projects found</h3>
+                  <p className="text-muted-foreground mb-4">
+                    No projects match your search &quot;{searchQuery}&quot;
+                  </p>
+                  <Button variant="outline" onClick={() => setSearchQuery('')}>
+                    Clear search
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <h3 className="text-lg font-medium text-foreground mb-1">No projects yet</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Create your first semantic cocoon project to get started
+                  </p>
+                  <Button onClick={() => setShowNewProjectDialog(true)} className="gap-2">
+                    <Plus className="w-4 h-4" />
+                    Create Project
+                  </Button>
+                </>
+              )}
+            </div>
+          )}
+
+          {/* Stats Footer */}
+          {projects.length > 0 && (
+            <div className="mt-8 text-center text-sm text-muted-foreground">
+              {projects.length} {projects.length === 1 ? 'project' : 'projects'} total
+            </div>
+          )}
+        </main>
+      </div>
 
       {/* New Project Dialog */}
       <Dialog open={showNewProjectDialog} onOpenChange={setShowNewProjectDialog}>
