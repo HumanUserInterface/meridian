@@ -231,6 +231,10 @@ export async function createProject(
   const { data: sessionData } = await supabase.auth.getSession();
   const accessToken = sessionData.session?.access_token;
 
+  // Debug: Check what auth.uid() returns from database perspective
+  const { data: authUidResult, error: rpcError } = await supabase.rpc('debug_auth_uid');
+  console.log('Database auth.uid():', authUidResult, 'RPC error:', rpcError?.message);
+
   console.log('Access token exists:', !!accessToken);
 
   // Try direct fetch with manual auth header to debug
