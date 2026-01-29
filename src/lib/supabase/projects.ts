@@ -227,6 +227,14 @@ export async function createProject(
 
   console.log('Creating project for user:', user.id);
 
+  // Debug: Check if we have a valid session with access token
+  const { data: sessionData } = await supabase.auth.getSession();
+  console.log('Session check before insert:', {
+    hasSession: !!sessionData.session,
+    hasAccessToken: !!sessionData.session?.access_token,
+    tokenPreview: sessionData.session?.access_token?.substring(0, 20) + '...',
+  });
+
   const { data, error } = await supabase
     .from('projects')
     .insert({
