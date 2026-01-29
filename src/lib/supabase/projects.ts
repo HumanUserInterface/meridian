@@ -1,4 +1,4 @@
-import { createClient } from './client';
+import { getAuthenticatedClient } from './client';
 import { CocoonNodeData, CocoonEdgeData, Project, ProjectSettings, Keyword } from '@/types';
 import { Node, Edge } from '@xyflow/react';
 
@@ -173,7 +173,7 @@ function dbProjectToProject(dbProject: DbProject): Project {
 // ==========================================
 
 export async function fetchProjects(): Promise<{ id: string; name: string; description?: string; domain?: string; createdAt: string; updatedAt: string; nodeCount: number; edgeCount: number }[]> {
-  const supabase = createClient();
+  const supabase = await getAuthenticatedClient();
 
   const { data: projects, error } = await supabase
     .from('projects')
@@ -211,7 +211,7 @@ export async function createProject(
   description?: string,
   domain?: string
 ): Promise<string> {
-  const supabase = createClient();
+  const supabase = await getAuthenticatedClient();
 
   const { data: { user }, error: authError } = await supabase.auth.getUser();
 
@@ -226,14 +226,6 @@ export async function createProject(
   }
 
   console.log('Creating project for user:', user.id);
-
-  // Debug: Check if we have a valid session with access token
-  const { data: sessionData } = await supabase.auth.getSession();
-  console.log('Session check before insert:', {
-    hasSession: !!sessionData.session,
-    hasAccessToken: !!sessionData.session?.access_token,
-    tokenPreview: sessionData.session?.access_token?.substring(0, 20) + '...',
-  });
 
   const { data, error } = await supabase
     .from('projects')
@@ -255,7 +247,7 @@ export async function createProject(
 }
 
 export async function deleteProject(projectId: string): Promise<void> {
-  const supabase = createClient();
+  const supabase = await getAuthenticatedClient();
 
   const { error } = await supabase
     .from('projects')
@@ -272,7 +264,7 @@ export async function updateProject(
   projectId: string,
   updates: { name?: string; description?: string; domain?: string; settings?: ProjectSettings }
 ): Promise<void> {
-  const supabase = createClient();
+  const supabase = await getAuthenticatedClient();
 
   const { error } = await supabase
     .from('projects')
@@ -299,7 +291,7 @@ export async function loadFullProject(projectId: string): Promise<{
   nodes: CocoonNode[];
   edges: CocoonEdge[];
 } | null> {
-  const supabase = createClient();
+  const supabase = await getAuthenticatedClient();
 
   // Fetch project
   const { data: projectData, error: projectError } = await supabase
@@ -367,7 +359,7 @@ export async function loadFullProject(projectId: string): Promise<{
 // ==========================================
 
 export async function saveNodes(projectId: string, nodes: CocoonNode[]): Promise<void> {
-  const supabase = createClient();
+  const supabase = await getAuthenticatedClient();
 
   if (nodes.length === 0) {
     // Delete all nodes for this project
@@ -388,7 +380,7 @@ export async function saveNodes(projectId: string, nodes: CocoonNode[]): Promise
 }
 
 export async function saveEdges(projectId: string, edges: CocoonEdge[]): Promise<void> {
-  const supabase = createClient();
+  const supabase = await getAuthenticatedClient();
 
   // First delete all existing edges for this project (simpler than diffing)
   await supabase.from('edges').delete().eq('project_id', projectId);
@@ -408,7 +400,7 @@ export async function saveEdges(projectId: string, edges: CocoonEdge[]): Promise
 }
 
 export async function saveNode(projectId: string, node: CocoonNode): Promise<void> {
-  const supabase = createClient();
+  const supabase = await getAuthenticatedClient();
 
   const dbNode = reactFlowNodeToDb(node, projectId);
 
@@ -423,7 +415,7 @@ export async function saveNode(projectId: string, node: CocoonNode): Promise<voi
 }
 
 export async function deleteNode(projectId: string, nodeId: string): Promise<void> {
-  const supabase = createClient();
+  const supabase = await getAuthenticatedClient();
 
   const { error } = await supabase
     .from('nodes')
@@ -438,7 +430,7 @@ export async function deleteNode(projectId: string, nodeId: string): Promise<voi
 }
 
 export async function saveKeywords(projectId: string, keywords: Keyword[]): Promise<void> {
-  const supabase = createClient();
+  const supabase = await getAuthenticatedClient();
 
   // Delete existing keywords
   await supabase.from('keywords').delete().eq('project_id', projectId);
