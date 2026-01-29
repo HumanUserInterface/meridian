@@ -213,8 +213,19 @@ export async function createProject(
 ): Promise<string> {
   const supabase = createClient();
 
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Not authenticated');
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+  if (authError) {
+    console.error('Auth error:', authError);
+    throw new Error(`Authentication error: ${authError.message}`);
+  }
+
+  if (!user) {
+    console.error('No user found - not authenticated');
+    throw new Error('Not authenticated. Please log in again.');
+  }
+
+  console.log('Creating project for user:', user.id);
 
   const { data, error } = await supabase
     .from('projects')
@@ -228,8 +239,8 @@ export async function createProject(
     .single();
 
   if (error) {
-    console.error('Error creating project:', error);
-    throw error;
+    console.error('Error creating project:', error.message, error.details, error.hint);
+    throw new Error(`Failed to create project: ${error.message}`);
   }
 
   return data.id;
