@@ -16,6 +16,8 @@ import {
   FolderOpen,
   Navigation,
   Newspaper,
+  Sparkles,
+  Loader2,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -136,13 +138,20 @@ const statusConfig: Record<string, { label: string; color: string }> = {
 
 const statusOrder: ContentStatus[] = ['planned', 'draft', 'review', 'published', 'needs-update'];
 
-function CustomNode({ id, data, selected }: CustomNodeProps) {
-  const { deleteNode, duplicateNode, updateNode } = useProjectStore();
+interface NodePosition {
+  x: number;
+  y: number;
+}
+
+function CustomNode({ id, data, selected }: CustomNodeProps & { positionAbsoluteX?: number; positionAbsoluteY?: number }) {
+  const { deleteNode, duplicateNode, updateNode, setNodes, setEdges, nodes, edges } = useProjectStore();
   const { setSelectedNodeId } = useUIStore();
   const [isEditingKeyword, setIsEditingKeyword] = useState(false);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editKeywordValue, setEditKeywordValue] = useState(data.primaryKeyword || '');
   const [editTitleValue, setEditTitleValue] = useState(data.title || '');
+  const [isHovered, setIsHovered] = useState(false);
+  const [isExpanding, setIsExpanding] = useState(false);
   const keywordInputRef = useRef<HTMLInputElement>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
 
@@ -237,11 +246,55 @@ function CustomNode({ id, data, selected }: CustomNodeProps) {
 
   const slug = data.slug as string | undefined;
 
+  // Get node position from the store
+  const currentNode = nodes.find(n => n.id === id);
+  const nodePosition: NodePosition = currentNode?.position || { x: 0, y: 0 };
+
+  // Handle AI expand - generate child nodes
+  const handleAIExpand = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isExpanding) return;
+
+    setIsExpanding(true);
+    try {
+      const response = await fetch('/api/ai/expand-node', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          parentNodeId: id,
+          parentKeyword: data.primaryKeyword || '',
+          parentTitle: data.title,
+          parentNodeType: nodeType,
+          parentPosition: nodePosition,
+          count: 5,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to expand node');
+      }
+
+      const result = await response.json();
+
+      // Add new nodes and edges to the store
+      setNodes([...nodes, ...result.nodes]);
+      setEdges([...edges, ...result.edges]);
+    } catch (error) {
+      console.error('Failed to expand node:', error);
+      // Could add toast notification here
+    } finally {
+      setIsExpanding(false);
+    }
+  };
+
   return (
     <div
       onClick={handleSelect}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       className={cn(
-        'min-w-[220px] max-w-[280px] rounded-lg border-2 shadow-md transition-all overflow-hidden',
+        'min-w-[220px] max-w-[280px] rounded-lg border-2 shadow-md transition-all overflow-hidden relative',
         config.bgColor,
         config.borderColor,
         selected && 'ring-2 ring-blue-400 ring-offset-2',
@@ -373,6 +426,32 @@ function CustomNode({ id, data, selected }: CustomNodeProps) {
           </DropdownMenu>
         </div>
       </div>
+
+      {/* AI Expand Button - appears on hover at bottom right */}
+      {(isHovered || isExpanding) && (
+        <button
+          onClick={handleAIExpand}
+          disabled={isExpanding}
+          className={cn(
+            'absolute -bottom-3 -right-3 z-10',
+            'w-7 h-7 rounded-full',
+            'bg-gradient-to-br from-amber-400 to-orange-500',
+            'shadow-lg shadow-amber-500/30',
+            'flex items-center justify-center',
+            'transition-all duration-200',
+            'hover:scale-110 hover:shadow-amber-500/50',
+            'disabled:opacity-70 disabled:cursor-not-allowed',
+            'border-2 border-white'
+          )}
+          title="Generate 5 related pages with AI"
+        >
+          {isExpanding ? (
+            <Loader2 className="w-4 h-4 text-white animate-spin" />
+          ) : (
+            <Sparkles className="w-4 h-4 text-white" />
+          )}
+        </button>
+      )}
 
       <Handle
         type="source"
