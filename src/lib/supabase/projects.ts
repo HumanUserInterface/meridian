@@ -227,23 +227,40 @@ export async function createProject(
 
   console.log('Creating project for user:', user.id);
 
-  const { data, error } = await supabase
-    .from('projects')
-    .insert({
-      user_id: user.id,
-      name,
-      description: description || null,
-      domain: domain || null,
-    })
-    .select('id')
-    .single();
+  // Get the access token to manually set auth header
+  const { data: sessionData } = await supabase.auth.getSession();
+  const accessToken = sessionData.session?.access_token;
 
-  if (error) {
-    console.error('Error creating project:', error.message, error.details, error.hint);
-    throw new Error(`Failed to create project: ${error.message}`);
+  console.log('Access token exists:', !!accessToken);
+
+  // Try direct fetch with manual auth header to debug
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/projects`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        'Authorization': `Bearer ${accessToken}`,
+        'Prefer': 'return=representation',
+      },
+      body: JSON.stringify({
+        user_id: user.id,
+        name,
+        description: description || null,
+        domain: domain || null,
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error('Error creating project:', response.status, errorText);
+    throw new Error(`Failed to create project: ${errorText}`);
   }
 
-  return data.id;
+  const data = await response.json();
+  return data[0].id;
 }
 
 export async function deleteProject(projectId: string): Promise<void> {
