@@ -231,9 +231,22 @@ export async function createProject(
   const { data: sessionData } = await supabase.auth.getSession();
   const accessToken = sessionData.session?.access_token;
 
-  // Debug: Check what auth.uid() returns from database perspective
-  const { data: authUidResult, error: rpcError } = await supabase.rpc('debug_auth_uid');
-  console.log('Database auth.uid():', authUidResult, 'RPC error:', rpcError?.message);
+  // Debug: Decode JWT to see what's in it
+  if (accessToken) {
+    try {
+      const payload = JSON.parse(atob(accessToken.split('.')[1]));
+      console.log('JWT payload:', {
+        sub: payload.sub,
+        aud: payload.aud,
+        role: payload.role,
+        exp: new Date(payload.exp * 1000).toISOString(),
+        iss: payload.iss,
+      });
+      console.log('User ID match:', payload.sub === user.id);
+    } catch (e) {
+      console.log('Failed to decode JWT:', e);
+    }
+  }
 
   console.log('Access token exists:', !!accessToken);
 
