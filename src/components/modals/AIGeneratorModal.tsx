@@ -1,9 +1,13 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import { useUIStore } from '@/stores/uiStore';
 import { useAIGeneratorStore } from '@/stores/aiGeneratorStore';
+import { useProjectStore } from '@/stores/projectStore';
+import { useProjectsStore } from '@/stores/projectsStore';
 import { AI_CONFIG, PageCountOption } from '@/lib/ai/types';
+import { autoLayoutNodes } from '@/lib/ai/autoLayout';
 
 import {
   Dialog,
@@ -33,6 +37,7 @@ import {
   AlertCircle,
   Loader2,
   Minimize2,
+  CheckCircle2,
 } from 'lucide-react';
 
 interface ParsedCSV {
@@ -50,14 +55,20 @@ interface AIGeneratorModalProps {
 }
 
 export default function AIGeneratorModal({ mode }: AIGeneratorModalProps) {
+  const router = useRouter();
+  const pathname = usePathname();
   const { aiGeneratorModalOpen, setAIGeneratorModalOpen } = useUIStore();
+  const { setNodes, setEdges, initializeNewProject } = useProjectStore();
+  const { addProject } = useProjectsStore();
 
   const {
     isGenerating,
     stage,
     progress,
     message,
+    result,
     error,
+    input,
     startGeneration,
     cancel,
     reset,
@@ -77,6 +88,86 @@ export default function AIGeneratorModal({ mode }: AIGeneratorModalProps) {
   const [isParsingCSV, setIsParsingCSV] = useState(false);
   const [csvError, setCsvError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Track if we've handled completion
+  const [completionHandled, setCompletionHandled] = useState(false);
+
+  // Determine if we're in dashboard or editor mode based on pathname
+  const isInEditor = pathname.startsWith('/project/');
+
+  // Handle completion - auto-apply and redirect
+  useEffect(() => {
+    if (result && !completionHandled && stage === 'complete') {
+      setCompletionHandled(true);
+
+      // Apply results
+      if (!isInEditor && input) {
+        // Dashboard mode: Create new project
+        const projectId = addProject(
+          input.seedKeyword,
+          input.businessDescription,
+          input.domain || undefined
+        );
+
+        initializeNewProject(
+          projectId,
+          input.seedKeyword,
+          input.businessDescription,
+          input.domain || undefined
+        );
+
+        // Auto-layout the generated nodes
+        const layoutedNodes = autoLayoutNodes(result.nodes, result.edges);
+        setNodes(layoutedNodes);
+        setEdges(result.edges);
+
+        // Auto-redirect after short delay
+        setTimeout(() => {
+          resetForm();
+          reset();
+          setAIGeneratorModalOpen(false);
+          router.push(`/project/${projectId}`);
+        }, 1500);
+      } else {
+        // Editor mode: Add to current project
+        const currentNodes = useProjectStore.getState().nodes;
+        const currentEdges = useProjectStore.getState().edges;
+
+        // Auto-layout new nodes
+        const layoutedNewNodes = autoLayoutNodes(result.nodes, result.edges);
+
+        // Offset new nodes to avoid overlap
+        const offsetX = currentNodes.length > 0
+          ? Math.max(...currentNodes.map(n => n.position.x)) + 400
+          : 0;
+
+        const offsetNodes = layoutedNewNodes.map(node => ({
+          ...node,
+          position: {
+            x: node.position.x + offsetX,
+            y: node.position.y,
+          },
+        }));
+
+        setNodes([...currentNodes, ...offsetNodes]);
+        setEdges([...currentEdges, ...result.edges]);
+
+        // Close modal after short delay
+        setTimeout(() => {
+          resetForm();
+          reset();
+          setAIGeneratorModalOpen(false);
+        }, 1500);
+      }
+    }
+  }, [result, stage, completionHandled, isInEditor, input]);
+
+  // Reset completionHandled when starting new generation
+  useEffect(() => {
+    if (isGenerating) {
+      setCompletionHandled(false);
+    }
+  }, [isGenerating]);
 
   // Close modal (but keep generation running)
   const handleClose = () => {
@@ -101,7 +192,7 @@ export default function AIGeneratorModal({ mode }: AIGeneratorModalProps) {
     setCsvData(null);
     setCsvFileName('');
     setCsvError(null);
-    reset();
+    setCompletionHandled(false);
   };
 
   // Handle CSV file selection
@@ -127,19 +218,19 @@ export default function AIGeneratorModal({ mode }: AIGeneratorModalProps) {
         throw new Error(errorData.error || 'Failed to parse CSV');
       }
 
-      const result = await response.json();
-      setCsvData(result);
+      const csvResult = await response.json();
+      setCsvData(csvResult);
 
       // Auto-adjust target count based on imported keywords
-      if (result.count > 0) {
+      if (csvResult.count > 0) {
         const currentCount = targetPageCount === 'custom' ? parseInt(customPageCount) : targetPageCount;
-        if (result.count > currentCount) {
-          const nextOption = AI_CONFIG.defaultPageCounts.find(opt => opt >= result.count);
+        if (csvResult.count > currentCount) {
+          const nextOption = AI_CONFIG.defaultPageCounts.find(opt => opt >= csvResult.count);
           if (nextOption) {
             setTargetPageCount(nextOption);
           } else {
             setTargetPageCount('custom');
-            setCustomPageCount(result.count.toString());
+            setCustomPageCount(csvResult.count.toString());
           }
         }
       }
@@ -192,6 +283,7 @@ export default function AIGeneratorModal({ mode }: AIGeneratorModalProps) {
   };
 
   const stageInfo = getStageInfo();
+  const isComplete = stage === 'complete' && result;
 
   return (
     <Dialog open={aiGeneratorModalOpen} onOpenChange={(open) => !open && handleClose()}>
@@ -208,8 +300,28 @@ export default function AIGeneratorModal({ mode }: AIGeneratorModalProps) {
           </DialogDescription>
         </DialogHeader>
 
-        {/* Generation Progress */}
-        {isGenerating ? (
+        {/* Completion State */}
+        {isComplete ? (
+          <div className="py-8 space-y-6">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CheckCircle2 className="w-8 h-8 text-green-500" />
+              </div>
+              <h3 className="text-lg font-semibold text-green-600 dark:text-green-400">
+                Generation Complete!
+              </h3>
+              <p className="text-sm text-muted-foreground mt-2">
+                Created {result.nodes.length} pages with {result.edges.length} internal links
+              </p>
+            </div>
+
+            <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span>Redirecting to your project...</span>
+            </div>
+          </div>
+        ) : isGenerating ? (
+          /* Generation Progress */
           <div className="py-8 space-y-6">
             <div className="text-center">
               <div className="text-4xl mb-2">{stageInfo.icon}</div>

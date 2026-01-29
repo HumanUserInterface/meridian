@@ -33,12 +33,14 @@ import {
   User,
   LogOut,
   Sparkles,
+  LayoutGrid,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { ThemeToggle } from './ThemeToggle';
 import { useAuthStore } from '@/stores/authStore';
 import { DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
+import { autoLayoutNodes } from '@/lib/ai/autoLayout';
 
 export default function Header() {
   const router = useRouter();
@@ -244,6 +246,22 @@ export default function Header() {
         <div className="w-px h-6 bg-border mx-1" />
 
         <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => {
+                  const layoutedNodes = autoLayoutNodes(nodes, edges);
+                  useProjectStore.getState().setNodes(layoutedNodes);
+                }}
+              >
+                <LayoutGrid className="w-5 h-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Auto Layout (Clean View)</TooltipContent>
+          </Tooltip>
+
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
