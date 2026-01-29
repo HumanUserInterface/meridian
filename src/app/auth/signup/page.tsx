@@ -9,13 +9,14 @@ import { Label } from '@/components/ui/label'
 import { Loader2, UserPlus, CheckCircle } from 'lucide-react'
 
 export default function SignupPage() {
-  const { signUp, isLoading } = useAuthStore()
+  const { signUp } = useAuthStore()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -31,7 +32,9 @@ export default function SignupPage() {
       return
     }
 
+    setIsLoading(true)
     const { error } = await signUp(email, password)
+    setIsLoading(false)
 
     if (error) {
       setError(error.message)

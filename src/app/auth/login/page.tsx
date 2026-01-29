@@ -14,17 +14,20 @@ export default function LoginPage() {
   const searchParams = useSearchParams()
   const redirectTo = searchParams.get('redirectTo') || '/'
 
-  const { signIn, isLoading } = useAuthStore()
+  const { signIn } = useAuthStore()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
 
+    setIsLoading(true)
     const { error } = await signIn(email, password)
+    setIsLoading(false)
 
     if (error) {
       setError(error.message)
