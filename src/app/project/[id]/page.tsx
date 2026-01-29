@@ -35,20 +35,22 @@ export default function ProjectEditor() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isHydrated, projectId, getProject, projects.length]);
 
+  // Track if project data is actually loaded (not just the ID)
+  const projectDataLoaded = currentProjectId === projectId && project.id === projectId;
+
   // Determine if project is loaded correctly
-  const isLoading = !isHydrated || (projectMeta && currentProjectId !== projectId);
+  const isLoading = !isHydrated || (projectMeta && !projectDataLoaded);
   const notFound = isHydrated && !projectMeta;
 
   // Load project when needed
   useEffect(() => {
     if (!isHydrated || !projectId || !projectMeta) return;
 
-    // If we already have this project loaded, no need to reload
-    if (currentProjectId === projectId) return;
-
-    // Load the project
+    // Always load project data from localStorage
+    // The persist middleware only restores currentProjectId, not the actual nodes/edges
+    // So we need to load from localStorage even if currentProjectId matches
     loadProject(projectId);
-  }, [isHydrated, projectId, loadProject, currentProjectId, projectMeta]);
+  }, [isHydrated, projectId, loadProject, projectMeta]);
 
   // Update project meta stats when nodes/edges change
   useEffect(() => {
