@@ -180,8 +180,8 @@ export interface LLMLinkingResponse {
 
 export const AI_CONFIG = {
   models: {
-    reasoning: 'meta-llama/Llama-3.3-70B-Instruct-Turbo',
-    simple: 'meta-llama/Llama-3.1-8B-Instruct-Turbo',
+    reasoning: 'meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo',
+    simple: 'meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo',
   },
   maxPages: 2000,
   defaultPageCounts: [10, 15, 20, 30, 50, 100, 200] as const,
