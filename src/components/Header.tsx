@@ -30,15 +30,24 @@ import {
   HelpCircle,
   ChevronLeft,
   LayoutDashboard,
+  User,
+  LogOut,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { ThemeToggle } from './ThemeToggle';
+import { useAuthStore } from '@/stores/authStore';
+import { DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 
 export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
   const { project, setProject, resetProject, nodes, edges } = useProjectStore();
+  const { user, initialize, signOut } = useAuthStore();
+
+  useEffect(() => {
+    initialize();
+  }, [initialize]);
   const {
     leftPanelOpen,
     rightPanelOpen,
@@ -101,6 +110,12 @@ export default function Header() {
 
   const handleBackToDashboard = () => {
     router.push('/');
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.push('/auth/login');
+    router.refresh();
   };
 
   // Sync project name when project changes
@@ -268,6 +283,37 @@ export default function Header() {
             <TooltipContent>Toggle right panel (])</TooltipContent>
           </Tooltip>
         </TooltipProvider>
+
+        <div className="w-px h-6 bg-border mx-1" />
+
+        {/* User Menu */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="rounded-full">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
+                <span className="text-white text-sm font-medium">
+                  {user?.email?.charAt(0).toUpperCase() || 'U'}
+                </span>
+              </div>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            <div className="px-2 py-1.5">
+              <p className="text-sm font-medium">{user?.email}</p>
+              <p className="text-xs text-muted-foreground">Signed in</p>
+            </div>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => router.push('/settings')}>
+              <User className="w-4 h-4 mr-2" />
+              Account Settings
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
+              <LogOut className="w-4 h-4 mr-2" />
+              Sign out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   );
