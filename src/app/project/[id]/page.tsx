@@ -84,17 +84,17 @@ export default function ProjectEditor() {
 
   if (isLoading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-gray-500">Loading project...</div>
+      <div className="h-screen flex items-center justify-center bg-background">
+        <div className="text-muted-foreground">Loading project...</div>
       </div>
     );
   }
 
   if (notFound) {
     return (
-      <div className="h-screen flex flex-col items-center justify-center bg-gray-50">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Project Not Found</h1>
-        <p className="text-gray-500 mb-4">
+      <div className="h-screen flex flex-col items-center justify-center bg-background">
+        <h1 className="text-2xl font-bold text-foreground mb-2">Project Not Found</h1>
+        <p className="text-muted-foreground mb-4">
           The project you&apos;re looking for doesn&apos;t exist or has been deleted.
         </p>
         <button

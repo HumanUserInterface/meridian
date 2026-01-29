@@ -20,7 +20,7 @@ export default function RightPanel() {
     : null;
 
   return (
-    <div className="h-full flex flex-col bg-white border-l">
+    <div className="h-full flex flex-col bg-background border-l">
       <Tabs defaultValue="properties" className="flex-1 flex flex-col">
         <TabsList className="mx-4 mt-4 grid grid-cols-2">
           <TabsTrigger value="properties">Properties</TabsTrigger>
@@ -34,7 +34,7 @@ export default function RightPanel() {
             ) : selectedEdge ? (
               <EdgeProperties edge={selectedEdge} />
             ) : (
-              <div className="p-4 text-center text-gray-500">
+              <div className="p-4 text-center text-muted-foreground">
                 <p className="mb-2">Select a node or edge to edit its properties</p>
                 <p className="text-sm">Click on any element on the canvas</p>
               </div>

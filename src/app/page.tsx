@@ -31,6 +31,7 @@ import {
   FolderOpen,
   ArrowUpDown,
 } from 'lucide-react';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 type SortOption = 'modified' | 'created' | 'name';
 
@@ -169,16 +170,16 @@ export default function Dashboard() {
   // Show loading state during hydration
   if (!isHydrated) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-gray-500">Loading...</div>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-muted-foreground">Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted/30">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200">
+      <header className="bg-background border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -186,14 +187,17 @@ export default function Dashboard() {
                 <span className="text-white font-bold text-lg">CF</span>
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">CocoonFlow</h1>
-                <p className="text-sm text-gray-500">Semantic Cocoon Planner</p>
+                <h1 className="text-2xl font-bold text-foreground">CocoonFlow</h1>
+                <p className="text-sm text-muted-foreground">Semantic Cocoon Planner</p>
               </div>
             </div>
-            <Button onClick={() => setShowNewProjectDialog(true)} className="gap-2">
-              <Plus className="w-4 h-4" />
-              New Project
-            </Button>
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <Button onClick={() => setShowNewProjectDialog(true)} className="gap-2">
+                <Plus className="w-4 h-4" />
+                New Project
+              </Button>
+            </div>
           </div>
         </div>
       </header>
@@ -203,7 +207,7 @@ export default function Dashboard() {
         {/* Search and Sort Controls */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
               placeholder="Search projects..."
               value={searchQuery}
@@ -233,13 +237,13 @@ export default function Dashboard() {
           </div>
         ) : (
           <div className="text-center py-16">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <FolderOpen className="w-8 h-8 text-gray-400" />
+            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+              <FolderOpen className="w-8 h-8 text-muted-foreground" />
             </div>
             {searchQuery ? (
               <>
-                <h3 className="text-lg font-medium text-gray-900 mb-1">No projects found</h3>
-                <p className="text-gray-500 mb-4">
+                <h3 className="text-lg font-medium text-foreground mb-1">No projects found</h3>
+                <p className="text-muted-foreground mb-4">
                   No projects match your search &quot;{searchQuery}&quot;
                 </p>
                 <Button variant="outline" onClick={() => setSearchQuery('')}>
@@ -248,8 +252,8 @@ export default function Dashboard() {
               </>
             ) : (
               <>
-                <h3 className="text-lg font-medium text-gray-900 mb-1">No projects yet</h3>
-                <p className="text-gray-500 mb-4">
+                <h3 className="text-lg font-medium text-foreground mb-1">No projects yet</h3>
+                <p className="text-muted-foreground mb-4">
                   Create your first semantic cocoon project to get started
                 </p>
                 <Button onClick={() => setShowNewProjectDialog(true)} className="gap-2">
@@ -263,7 +267,7 @@ export default function Dashboard() {
 
         {/* Stats Footer */}
         {projects.length > 0 && (
-          <div className="mt-8 text-center text-sm text-gray-500">
+          <div className="mt-8 text-center text-sm text-muted-foreground">
             {projects.length} {projects.length === 1 ? 'project' : 'projects'} total
           </div>
         )}

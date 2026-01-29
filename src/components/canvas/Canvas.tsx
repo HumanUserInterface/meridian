@@ -26,6 +26,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Plus, Target, Layers, FileText, ExternalLink } from 'lucide-react';
+import { useTheme } from '@/components/ThemeProvider';
 
 const nodeTypes = {
   cocoonNode: CustomNode,
@@ -43,10 +44,12 @@ const nodeOptions: { type: NodeType; label: string; icon: React.ElementType }[] 
 ];
 
 function CanvasContent() {
-  const { nodes, edges, onNodesChange, onEdgesChange, onConnect, addNode, deleteEdge, deleteNode } = useProjectStore();
-  const { showMinimap, clearSelection, setSelectedNodeId, selectedEdgeId, selectedNodeId, setSelectedEdgeId } = useUIStore();
+  const { nodes, edges, onNodesChange, onEdgesChange, onConnect, addNode, deleteEdge } = useProjectStore();
+  const { showMinimap, clearSelection, setSelectedNodeId, selectedEdgeId, setSelectedEdgeId } = useUIStore();
   const { screenToFlowPosition } = useReactFlow();
+  const { resolvedTheme } = useTheme();
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
+  const isDark = resolvedTheme === 'dark';
 
   // Handle keyboard delete for selected edges/nodes
   useEffect(() => {
@@ -129,10 +132,15 @@ function CanvasContent() {
         maxZoom={2}
         deleteKeyCode={['Backspace', 'Delete']}
         multiSelectionKeyCode={['Meta', 'Control']}
-        className="bg-gray-50"
+        className={isDark ? 'bg-neutral-900' : 'bg-gray-50'}
       >
-        <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#d1d5db" />
-        <Controls position="bottom-left" />
+        <Background
+          variant={BackgroundVariant.Dots}
+          gap={20}
+          size={1}
+          color={isDark ? '#404040' : '#d1d5db'}
+        />
+        <Controls position="bottom-left" className="dark:bg-neutral-800 dark:border-neutral-700 dark:text-white" />
         {showMinimap && (
           <MiniMap
             position="bottom-right"
@@ -153,8 +161,8 @@ function CanvasContent() {
                   return '#6B7280';
               }
             }}
-            maskColor="rgba(0, 0, 0, 0.1)"
-            className="bg-white border rounded-lg shadow-lg"
+            maskColor={isDark ? 'rgba(0, 0, 0, 0.3)' : 'rgba(0, 0, 0, 0.1)'}
+            className={isDark ? 'bg-neutral-800 border-neutral-700 rounded-lg shadow-lg' : 'bg-white border rounded-lg shadow-lg'}
           />
         )}
 

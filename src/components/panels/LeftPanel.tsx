@@ -26,16 +26,16 @@ import {
 import { cn } from '@/lib/utils';
 
 const nodeTypeConfig: Record<NodeType, { icon: React.ElementType; color: string; label: string }> = {
-  pillar: { icon: Target, color: 'text-blue-600', label: 'Pillar' },
-  cluster: { icon: Layers, color: 'text-emerald-600', label: 'Cluster' },
-  supporting: { icon: FileText, color: 'text-gray-600', label: 'Supporting' },
-  external: { icon: ExternalLink, color: 'text-purple-600', label: 'External' },
-  orphan: { icon: AlertTriangle, color: 'text-red-600', label: 'Orphan' },
-  homepage: { icon: Home, color: 'text-indigo-600', label: 'Homepage' },
-  product: { icon: Package, color: 'text-amber-600', label: 'Product' },
-  category: { icon: FolderOpen, color: 'text-cyan-600', label: 'Category' },
-  navpage: { icon: Navigation, color: 'text-slate-500', label: 'Nav Page' },
-  blog: { icon: Newspaper, color: 'text-rose-600', label: 'Blog Article' },
+  pillar: { icon: Target, color: 'text-blue-600 dark:text-blue-400', label: 'Pillar' },
+  cluster: { icon: Layers, color: 'text-emerald-600 dark:text-emerald-400', label: 'Cluster' },
+  supporting: { icon: FileText, color: 'text-gray-600 dark:text-gray-400', label: 'Supporting' },
+  external: { icon: ExternalLink, color: 'text-purple-600 dark:text-purple-400', label: 'External' },
+  orphan: { icon: AlertTriangle, color: 'text-red-600 dark:text-red-400', label: 'Orphan' },
+  homepage: { icon: Home, color: 'text-indigo-600 dark:text-indigo-400', label: 'Homepage' },
+  product: { icon: Package, color: 'text-amber-600 dark:text-amber-400', label: 'Product' },
+  category: { icon: FolderOpen, color: 'text-cyan-600 dark:text-cyan-400', label: 'Category' },
+  navpage: { icon: Navigation, color: 'text-slate-500 dark:text-slate-400', label: 'Nav Page' },
+  blog: { icon: Newspaper, color: 'text-rose-600 dark:text-rose-400', label: 'Blog Article' },
 };
 
 const draggableNodes: { type: NodeType; label: string; icon: React.ElementType }[] = [
@@ -77,11 +77,11 @@ export default function LeftPanel() {
   };
 
   return (
-    <div className="h-full flex flex-col bg-white border-r">
+    <div className="h-full flex flex-col bg-background border-r">
       <div className="p-4 border-b">
-        <h2 className="font-semibold text-gray-900 mb-3">Content Structure</h2>
+        <h2 className="font-semibold text-foreground mb-3">Content Structure</h2>
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
             placeholder="Search nodes..."
             value={searchQuery}
@@ -107,7 +107,7 @@ export default function LeftPanel() {
                   <div key={type}>
                     <div className="flex items-center gap-2 mb-2">
                       <Icon className={cn('w-4 h-4', config.color)} />
-                      <span className="text-sm font-medium text-gray-700">
+                      <span className="text-sm font-medium text-muted-foreground">
                         {config.label} ({typeNodes.length})
                       </span>
                     </div>
@@ -122,7 +122,7 @@ export default function LeftPanel() {
                           <div className="truncate">
                             <div className="font-medium truncate">{node.data.title}</div>
                             {node.data.primaryKeyword && (
-                              <div className="text-xs text-gray-500 truncate">
+                              <div className="text-xs text-muted-foreground truncate">
                                 {node.data.primaryKeyword}
                               </div>
                             )}
@@ -135,7 +135,7 @@ export default function LeftPanel() {
               })}
 
               {filteredNodes.length === 0 && (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-8 text-muted-foreground">
                   {searchQuery ? 'No nodes match your search' : 'No nodes yet. Add one to get started!'}
                 </div>
               )}
@@ -146,7 +146,7 @@ export default function LeftPanel() {
         <TabsContent value="add" className="flex-1 m-0">
           <ScrollArea className="h-full">
             <div className="p-4 space-y-2">
-              <p className="text-sm text-gray-500 mb-4">
+              <p className="text-sm text-muted-foreground mb-4">
                 Drag and drop nodes onto the canvas to add them.
               </p>
               {draggableNodes.map(({ type, label, icon: Icon }) => {
@@ -158,13 +158,13 @@ export default function LeftPanel() {
                     onDragStart={(e) => handleDragStart(e, type)}
                     className={cn(
                       'flex items-center gap-3 p-3 rounded-lg border-2 border-dashed cursor-grab',
-                      'hover:border-solid hover:bg-gray-50 transition-colors',
+                      'hover:border-solid hover:bg-accent transition-colors',
                       'active:cursor-grabbing'
                     )}
                   >
-                    <GripVertical className="w-4 h-4 text-gray-400" />
+                    <GripVertical className="w-4 h-4 text-muted-foreground" />
                     <Icon className={cn('w-5 h-5', config.color)} />
-                    <span className="font-medium text-gray-700">{label}</span>
+                    <span className="font-medium text-foreground">{label}</span>
                   </div>
                 );
               })}
@@ -173,8 +173,8 @@ export default function LeftPanel() {
         </TabsContent>
       </Tabs>
 
-      <div className="p-4 border-t bg-gray-50">
-        <div className="text-sm text-gray-500">
+      <div className="p-4 border-t bg-muted/50">
+        <div className="text-sm text-muted-foreground">
           <div className="flex justify-between mb-1">
             <span>Total Nodes:</span>
             <Badge variant="secondary">{nodes.length}</Badge>

@@ -85,7 +85,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
   return (
     <>
       <div
-        className="group relative bg-white border border-gray-200 rounded-xl p-5 hover:border-blue-300 hover:shadow-lg transition-all duration-200 cursor-pointer"
+        className="group relative bg-card border rounded-xl p-5 hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-lg dark:hover:shadow-blue-500/10 transition-all duration-200 cursor-pointer"
         onClick={handleOpen}
       >
         {/* Header */}
@@ -113,7 +113,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
                 />
               ) : (
                 <h3
-                  className="font-semibold text-gray-900 truncate"
+                  className="font-semibold text-foreground truncate"
                   onDoubleClick={(e) => {
                     e.stopPropagation();
                     setIsEditing(true);
@@ -123,7 +123,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
                 </h3>
               )}
               {project.domain && (
-                <div className="flex items-center gap-1 text-xs text-gray-500 mt-0.5">
+                <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
                   <Globe className="w-3 h-3" />
                   <span className="truncate">{project.domain}</span>
                 </div>
@@ -154,7 +154,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={(e) => { e.stopPropagation(); setShowDeleteDialog(true); }}
-                className="text-red-600 focus:text-red-600"
+                className="text-destructive focus:text-destructive"
               >
                 <Trash2 className="w-4 h-4 mr-2" />
                 Delete
@@ -165,7 +165,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
 
         {/* Description */}
         {project.description && (
-          <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+          <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
             {project.description}
           </p>
         )}
@@ -183,7 +183,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center text-xs text-gray-500">
+        <div className="flex items-center text-xs text-muted-foreground">
           <Calendar className="w-3 h-3 mr-1" />
           Modified {formatDate(project.updatedAt)}
         </div>

@@ -123,3 +123,40 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* React Flow dark mode overrides */
+.dark .react-flow__controls {
+  background: oklch(0.205 0 0);
+  border-color: oklch(0.3 0 0);
+}
+
+.dark .react-flow__controls-button {
+  background: oklch(0.205 0 0);
+  border-color: oklch(0.3 0 0);
+  fill: oklch(0.985 0 0);
+}
+
+.dark .react-flow__controls-button:hover {
+  background: oklch(0.269 0 0);
+}
+
+.dark .react-flow__controls-button svg {
+  fill: currentColor;
+}
+
+.dark .react-flow__edge-path {
+  stroke: oklch(0.6 0 0);
+}
+
+.dark .react-flow__edge.selected .react-flow__edge-path {
+  stroke: oklch(0.6 0.2 260);
+}
+
+.dark .react-flow__handle {
+  background: oklch(0.5 0 0);
+  border-color: oklch(0.3 0 0);
+}
+
+.dark .react-flow__minimap {
+  background: oklch(0.205 0 0);
+}

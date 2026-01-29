@@ -33,6 +33,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import { ThemeToggle } from './ThemeToggle';
 
 export default function Header() {
   const router = useRouter();
@@ -108,7 +109,7 @@ export default function Header() {
   }
 
   return (
-    <header className="h-14 border-b bg-white flex items-center justify-between px-4">
+    <header className="h-14 border-b bg-background flex items-center justify-between px-4">
       <div className="flex items-center gap-4">
         {isInEditor && (
           <TooltipProvider>
@@ -118,7 +119,7 @@ export default function Header() {
                   variant="ghost"
                   size="sm"
                   onClick={handleBackToDashboard}
-                  className="gap-2 text-gray-600 hover:text-gray-900"
+                  className="gap-2"
                 >
                   <ChevronLeft className="w-4 h-4" />
                   <LayoutDashboard className="w-4 h-4" />
@@ -136,7 +137,7 @@ export default function Header() {
                 variant="ghost"
                 size="icon"
                 onClick={toggleLeftPanel}
-                className={leftPanelOpen ? 'bg-gray-100' : ''}
+                className={leftPanelOpen ? 'bg-accent' : ''}
               >
                 <PanelLeft className="w-5 h-5" />
               </Button>
@@ -161,7 +162,7 @@ export default function Header() {
           ) : (
             <button
               onClick={() => setIsEditingName(true)}
-              className="font-semibold text-gray-900 hover:text-blue-600 transition-colors"
+              className="font-semibold text-foreground hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
             >
               {project.name}
             </button>
@@ -213,7 +214,7 @@ export default function Header() {
           Share
         </Button>
 
-        <div className="w-px h-6 bg-gray-200 mx-1" />
+        <div className="w-px h-6 bg-border mx-1" />
 
         <TooltipProvider>
           <Tooltip>
@@ -242,6 +243,8 @@ export default function Header() {
             <TooltipContent>Settings</TooltipContent>
           </Tooltip>
 
+          <ThemeToggle />
+
           <Tooltip>
             <TooltipTrigger asChild>
               <Button variant="ghost" size="icon">
@@ -257,7 +260,7 @@ export default function Header() {
                 variant="ghost"
                 size="icon"
                 onClick={toggleRightPanel}
-                className={rightPanelOpen ? 'bg-gray-100' : ''}
+                className={rightPanelOpen ? 'bg-accent' : ''}
               >
                 <PanelRight className="w-5 h-5" />
               </Button>
