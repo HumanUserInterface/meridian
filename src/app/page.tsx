@@ -62,19 +62,23 @@ export default function Dashboard() {
   // Initialize auth and projects
   useEffect(() => {
     if (!isHydrated) return;
+    console.log('[Dashboard] Initializing auth...');
     initAuth();
   }, [isHydrated, initAuth]);
 
   useEffect(() => {
+    console.log('[Dashboard] Auth state:', { isHydrated, authInitialized, hasUser: !!user });
     if (!isHydrated || !authInitialized) return;
 
     // Redirect to login if not authenticated
     if (!user) {
+      console.log('[Dashboard] No user, redirecting to login...');
       router.push('/auth/login');
       return;
     }
 
     // Initialize projects
+    console.log('[Dashboard] User authenticated, initializing projects...');
     initProjects();
   }, [isHydrated, authInitialized, user, router, initProjects]);
 
@@ -145,7 +149,7 @@ export default function Dashboard() {
   };
 
   // Show loading state during initialization
-  if (!isHydrated || !authInitialized || (user && !isInitialized)) {
+  if (!isHydrated || !authInitialized) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex items-center gap-2 text-muted-foreground">
@@ -156,9 +160,28 @@ export default function Dashboard() {
     );
   }
 
-  // Redirect handled in useEffect
+  // Show loading while projects initialize (user is authenticated)
+  if (user && !isInitialized) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <Loader2 className="w-5 h-5 animate-spin" />
+          <span>Loading projects...</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Redirect handled in useEffect - show loading while redirect happens
   if (!user) {
-    return null;
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <Loader2 className="w-5 h-5 animate-spin" />
+          <span>Redirecting to login...</span>
+        </div>
+      </div>
+    );
   }
 
   return (

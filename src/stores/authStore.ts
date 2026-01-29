@@ -25,16 +25,28 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   initialize: async () => {
     if (get().isInitialized) return
 
+    console.log('[Auth] Initializing...');
     const supabase = createClient()
 
     // Get initial session
-    const { data: { session } } = await supabase.auth.getSession()
-    set({
-      user: session?.user ?? null,
-      session,
-      isLoading: false,
-      isInitialized: true,
-    })
+    try {
+      const { data: { session }, error } = await supabase.auth.getSession()
+      console.log('[Auth] Session result:', { hasSession: !!session, error: error?.message });
+      set({
+        user: session?.user ?? null,
+        session,
+        isLoading: false,
+        isInitialized: true,
+      })
+    } catch (err) {
+      console.error('[Auth] Error getting session:', err);
+      set({
+        user: null,
+        session: null,
+        isLoading: false,
+        isInitialized: true,
+      })
+    }
 
     // Listen for auth changes
     supabase.auth.onAuthStateChange((_event, session) => {
