@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useProjectsStore } from '@/stores/projectsStore';
 import { useProjectStore } from '@/stores/projectStore';
 import { useUIStore } from '@/stores/uiStore';
-import { useStoreHydration } from '@/lib/useHydration';
+import { useAuthStore } from '@/stores/authStore';
+import { useHydration } from '@/lib/useHydration';
 import ProjectCard from '@/components/dashboard/ProjectCard';
 import Sidebar from '@/components/dashboard/Sidebar';
 import AIGeneratorModal from '@/components/modals/AIGeneratorModal';
@@ -35,6 +36,7 @@ import {
   FolderOpen,
   ArrowUpDown,
   Sparkles,
+  Loader2,
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 
@@ -42,7 +44,10 @@ type SortOption = 'modified' | 'created' | 'name';
 
 export default function Dashboard() {
   const router = useRouter();
-  const { projects, addProject, migrated, setMigrated } = useProjectsStore();
+  const isHydrated = useHydration();
+
+  const { user, isInitialized: authInitialized, initialize: initAuth } = useAuthStore();
+  const { projects, isLoading, isInitialized, initialize: initProjects, addProject } = useProjectsStore();
   const { initializeNewProject } = useProjectStore();
   const { setAIGeneratorModalOpen } = useUIStore();
 
@@ -52,67 +57,26 @@ export default function Dashboard() {
   const [newProjectName, setNewProjectName] = useState('');
   const [newProjectDescription, setNewProjectDescription] = useState('');
   const [newProjectDomain, setNewProjectDomain] = useState('');
-  const isHydrated = useStoreHydration();
+  const [isCreating, setIsCreating] = useState(false);
 
-  // Migration logic: migrate old single-project data to new multi-project format
+  // Initialize auth and projects
   useEffect(() => {
     if (!isHydrated) return;
+    initAuth();
+  }, [isHydrated, initAuth]);
 
-    // Check if we need to migrate
-    if (migrated) return;
+  useEffect(() => {
+    if (!isHydrated || !authInitialized) return;
 
-    const oldProjectData = localStorage.getItem('meridian-project');
-    if (oldProjectData) {
-      try {
-        const data = JSON.parse(oldProjectData);
-        if (data.state) {
-          const { project, nodes, edges } = data.state;
-
-          // Generate new ID for the migrated project
-          const newId = crypto.randomUUID();
-
-          // Save the project data under the new key
-          localStorage.setItem(`meridian-project-${newId}`, JSON.stringify({
-            project: { ...project, id: newId },
-            nodes: nodes || [],
-            edges: edges || [],
-          }));
-
-          // Add to projects list
-          addProject(
-            project.name || 'Migrated Project',
-            project.description,
-            project.domain
-          );
-
-          // Update the newly added project with correct stats
-          const projectsState = useProjectsStore.getState();
-          const lastProject = projectsState.projects[projectsState.projects.length - 1];
-          if (lastProject) {
-            projectsState.updateProjectMeta(lastProject.id, {
-              nodeCount: nodes?.length || 0,
-              edgeCount: edges?.length || 0,
-            });
-
-            // Fix: we need to update the stored project data with the correct ID
-            localStorage.removeItem(`meridian-project-${newId}`);
-            localStorage.setItem(`meridian-project-${lastProject.id}`, JSON.stringify({
-              project: { ...project, id: lastProject.id },
-              nodes: nodes || [],
-              edges: edges || [],
-            }));
-          }
-
-          // Remove old data
-          localStorage.removeItem('meridian-project');
-        }
-      } catch (e) {
-        console.error('Failed to migrate old project data:', e);
-      }
+    // Redirect to login if not authenticated
+    if (!user) {
+      router.push('/auth/login');
+      return;
     }
 
-    setMigrated(true);
-  }, [isHydrated, migrated, addProject, setMigrated]);
+    // Initialize projects
+    initProjects();
+  }, [isHydrated, authInitialized, user, router, initProjects]);
 
   // Filter and sort projects
   const filteredProjects = useMemo(() => {
@@ -146,40 +110,55 @@ export default function Dashboard() {
     return sorted;
   }, [projects, searchQuery, sortBy]);
 
-  const handleCreateProject = () => {
-    if (!newProjectName.trim()) return;
+  const handleCreateProject = async () => {
+    if (!newProjectName.trim() || isCreating) return;
 
-    const id = addProject(
-      newProjectName.trim(),
-      newProjectDescription.trim() || undefined,
-      newProjectDomain.trim() || undefined
-    );
+    setIsCreating(true);
+    try {
+      const id = await addProject(
+        newProjectName.trim(),
+        newProjectDescription.trim() || undefined,
+        newProjectDomain.trim() || undefined
+      );
 
-    // Initialize the project store with the new project
-    initializeNewProject(
-      id,
-      newProjectName.trim(),
-      newProjectDescription.trim() || undefined,
-      newProjectDomain.trim() || undefined
-    );
+      // Initialize the project store with the new project
+      initializeNewProject(
+        id,
+        newProjectName.trim(),
+        newProjectDescription.trim() || undefined,
+        newProjectDomain.trim() || undefined
+      );
 
-    // Reset form
-    setNewProjectName('');
-    setNewProjectDescription('');
-    setNewProjectDomain('');
-    setShowNewProjectDialog(false);
+      // Reset form
+      setNewProjectName('');
+      setNewProjectDescription('');
+      setNewProjectDomain('');
+      setShowNewProjectDialog(false);
 
-    // Navigate to the new project
-    router.push(`/project/${id}`);
+      // Navigate to the new project
+      router.push(`/project/${id}`);
+    } catch (error) {
+      console.error('Failed to create project:', error);
+    } finally {
+      setIsCreating(false);
+    }
   };
 
-  // Show loading state during hydration
-  if (!isHydrated) {
+  // Show loading state during initialization
+  if (!isHydrated || !authInitialized || (user && !isInitialized)) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-muted-foreground">Loading...</div>
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <Loader2 className="w-5 h-5 animate-spin" />
+          <span>Loading...</span>
+        </div>
       </div>
     );
+  }
+
+  // Redirect handled in useEffect
+  if (!user) {
+    return null;
   }
 
   return (
@@ -242,14 +221,24 @@ export default function Dashboard() {
             </Select>
           </div>
 
+          {/* Loading State */}
+          {isLoading && (
+            <div className="flex items-center justify-center py-16">
+              <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+            </div>
+          )}
+
           {/* Projects Grid */}
-          {filteredProjects.length > 0 ? (
+          {!isLoading && filteredProjects.length > 0 && (
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
               {filteredProjects.map((project) => (
                 <ProjectCard key={project.id} project={project} />
               ))}
             </div>
-          ) : (
+          )}
+
+          {/* Empty State */}
+          {!isLoading && filteredProjects.length === 0 && (
             <div className="text-center py-16">
               <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
                 <FolderOpen className="w-8 h-8 text-muted-foreground" />
@@ -337,8 +326,15 @@ export default function Dashboard() {
             <Button variant="outline" onClick={() => setShowNewProjectDialog(false)}>
               Cancel
             </Button>
-            <Button onClick={handleCreateProject} disabled={!newProjectName.trim()}>
-              Create Project
+            <Button onClick={handleCreateProject} disabled={!newProjectName.trim() || isCreating}>
+              {isCreating ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                'Create Project'
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>

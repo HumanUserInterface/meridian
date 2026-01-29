@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useProjectStore } from '@/stores/projectStore';
 import { useProjectsStore } from '@/stores/projectsStore';
+import { useAuthStore } from '@/stores/authStore';
 import { useUIStore } from '@/stores/uiStore';
-import { useStoreHydration } from '@/lib/useHydration';
+import { useHydration } from '@/lib/useHydration';
 import Header from '@/components/Header';
 import Canvas from '@/components/canvas/Canvas';
 import LeftPanel from '@/components/panels/LeftPanel';
@@ -15,46 +16,44 @@ import ImportModal from '@/components/modals/ImportModal';
 import AIGeneratorModal from '@/components/modals/AIGeneratorModal';
 import AIGenerationStatus from '@/components/AIGenerationStatus';
 import { cn } from '@/lib/utils';
-import { ChevronRight, ChevronLeft } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Loader2 } from 'lucide-react';
 
 export default function ProjectEditor() {
   const params = useParams();
   const router = useRouter();
   const projectId = params.id as string;
-  const isHydrated = useStoreHydration();
+  const isHydrated = useHydration();
 
-  const { loadProject, currentProjectId, nodes, edges, project } = useProjectStore();
-  const { getProject, updateProjectMeta, projects } = useProjectsStore();
+  const { user, isInitialized: authInitialized, initialize: initAuth } = useAuthStore();
+  const { loadProject, currentProjectId, isLoading, error, nodes, edges, project } = useProjectStore();
+  const { updateProjectMeta } = useProjectsStore();
   const { leftPanelOpen, rightPanelOpen, toggleLeftPanel, toggleRightPanel } = useUIStore();
 
-  // Check if project exists
-  // We include projects.length to trigger recalculation when projects list changes
-  const projectMeta = useMemo(() => {
-    if (!isHydrated) return undefined;
-    return getProject(projectId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isHydrated, projectId, getProject, projects.length]);
-
-  // Track if project data is actually loaded (not just the ID)
-  const projectDataLoaded = currentProjectId === projectId && project.id === projectId;
-
-  // Determine if project is loaded correctly
-  const isLoading = !isHydrated || (projectMeta && !projectDataLoaded);
-  const notFound = isHydrated && !projectMeta;
-
-  // Load project when needed
+  // Initialize auth
   useEffect(() => {
-    if (!isHydrated || !projectId || !projectMeta) return;
+    if (!isHydrated) return;
+    initAuth();
+  }, [isHydrated, initAuth]);
 
-    // Always load project data from localStorage
-    // The persist middleware only restores currentProjectId, not the actual nodes/edges
-    // So we need to load from localStorage even if currentProjectId matches
-    loadProject(projectId);
-  }, [isHydrated, projectId, loadProject, projectMeta]);
+  // Load project when authenticated
+  useEffect(() => {
+    if (!isHydrated || !authInitialized) return;
+
+    // Redirect to login if not authenticated
+    if (!user) {
+      router.push('/auth/login');
+      return;
+    }
+
+    // Load the project if not already loaded
+    if (projectId && currentProjectId !== projectId) {
+      loadProject(projectId);
+    }
+  }, [isHydrated, authInitialized, user, projectId, currentProjectId, loadProject, router]);
 
   // Update project meta stats when nodes/edges change
   useEffect(() => {
-    if (currentProjectId && isHydrated && projectMeta) {
+    if (currentProjectId && currentProjectId === projectId) {
       updateProjectMeta(currentProjectId, {
         nodeCount: nodes.length,
         edgeCount: edges.length,
@@ -63,7 +62,7 @@ export default function ProjectEditor() {
         domain: project.domain,
       });
     }
-  }, [nodes.length, edges.length, project.name, project.description, project.domain, currentProjectId, isHydrated, projectMeta, updateProjectMeta]);
+  }, [nodes.length, edges.length, project.name, project.description, project.domain, currentProjectId, projectId, updateProjectMeta]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -87,20 +86,30 @@ export default function ProjectEditor() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [toggleLeftPanel, toggleRightPanel]);
 
-  if (isLoading) {
+  // Loading state
+  if (!isHydrated || !authInitialized || isLoading) {
     return (
       <div className="h-screen flex items-center justify-center bg-background">
-        <div className="text-muted-foreground">Loading project...</div>
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <Loader2 className="w-5 h-5 animate-spin" />
+          <span>Loading project...</span>
+        </div>
       </div>
     );
   }
 
-  if (notFound) {
+  // Not authenticated
+  if (!user) {
+    return null;
+  }
+
+  // Error state (project not found)
+  if (error) {
     return (
       <div className="h-screen flex flex-col items-center justify-center bg-background">
         <h1 className="text-2xl font-bold text-foreground mb-2">Project Not Found</h1>
         <p className="text-muted-foreground mb-4">
-          The project you&apos;re looking for doesn&apos;t exist or has been deleted.
+          {error}
         </p>
         <button
           onClick={() => router.push('/')}

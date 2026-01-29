@@ -7,7 +7,6 @@ import { useAIGeneratorStore } from '@/stores/aiGeneratorStore';
 import { useProjectStore } from '@/stores/projectStore';
 import { useProjectsStore } from '@/stores/projectsStore';
 import { AI_CONFIG, PageCountOption } from '@/lib/ai/types';
-import { Project } from '@/types';
 import { autoLayoutNodes } from '@/lib/ai/autoLayout';
 
 import {
@@ -103,59 +102,44 @@ export default function AIGeneratorModal({ mode }: AIGeneratorModalProps) {
 
       // Apply results
       if (!isInEditor && input) {
-        // Dashboard mode: Create new project
-        const projectId = addProject(
-          input.seedKeyword,
-          input.businessDescription,
-          input.domain || undefined
-        );
+        // Dashboard mode: Create new project (async)
+        const createAndNavigate = async () => {
+          try {
+            const projectId = await addProject(
+              input.seedKeyword,
+              input.businessDescription,
+              input.domain || undefined
+            );
 
-        // Auto-layout the generated nodes
-        const layoutedNodes = autoLayoutNodes(result.nodes, result.edges);
+            // Auto-layout the generated nodes
+            const layoutedNodes = autoLayoutNodes(result.nodes, result.edges);
 
-        // Initialize the project with the actual nodes/edges
-        // Use getState() to avoid stale closures
-        const store = useProjectStore.getState();
+            // Initialize the project store
+            const store = useProjectStore.getState();
+            store.initializeNewProject(
+              projectId,
+              input.seedKeyword,
+              input.businessDescription,
+              input.domain || undefined
+            );
 
-        // Set up the project data
-        const now = new Date().toISOString();
-        const newProject: Project = {
-          id: projectId,
-          name: input.seedKeyword,
-          description: input.businessDescription,
-          domain: input.domain || '',
-          createdAt: now,
-          updatedAt: now,
-          settings: store.project.settings,
-          keywords: [],
+            // Set nodes and edges (this saves to Supabase)
+            store.setNodes(layoutedNodes);
+            store.setEdges(result.edges);
+
+            // Auto-redirect after short delay
+            setTimeout(() => {
+              resetForm();
+              reset();
+              setAIGeneratorModalOpen(false);
+              router.push(`/project/${projectId}`);
+            }, 1500);
+          } catch (error) {
+            console.error('Failed to create project:', error);
+          }
         };
 
-        // Save directly to localStorage first to ensure it's persisted
-        if (typeof window !== 'undefined') {
-          localStorage.setItem(`meridian-project-${projectId}`, JSON.stringify({
-            project: newProject,
-            nodes: layoutedNodes,
-            edges: result.edges,
-          }));
-        }
-
-        // Then update the store state
-        store.initializeNewProject(
-          projectId,
-          input.seedKeyword,
-          input.businessDescription,
-          input.domain || undefined
-        );
-        store.setNodes(layoutedNodes);
-        store.setEdges(result.edges);
-
-        // Auto-redirect after short delay
-        setTimeout(() => {
-          resetForm();
-          reset();
-          setAIGeneratorModalOpen(false);
-          router.push(`/project/${projectId}`);
-        }, 1500);
+        createAndNavigate();
       } else {
         // Editor mode: Add to current project
         const store = useProjectStore.getState();

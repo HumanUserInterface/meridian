@@ -41,28 +41,36 @@ export default function AIGenerationStatus() {
     if (result && !aiGeneratorModalOpen) {
       // Auto-apply results when generation completes
       if (!isInEditor && input) {
-        // Dashboard mode: Create new project
-        const projectId = addProject(
-          input.seedKeyword,
-          input.businessDescription,
-          input.domain || undefined
-        );
+        // Dashboard mode: Create new project (async)
+        const createAndNavigate = async () => {
+          try {
+            const projectId = await addProject(
+              input.seedKeyword,
+              input.businessDescription,
+              input.domain || undefined
+            );
 
-        initializeNewProject(
-          projectId,
-          input.seedKeyword,
-          input.businessDescription,
-          input.domain || undefined
-        );
+            initializeNewProject(
+              projectId,
+              input.seedKeyword,
+              input.businessDescription,
+              input.domain || undefined
+            );
 
-        setNodes(result.nodes);
-        setEdges(result.edges);
+            setNodes(result.nodes);
+            setEdges(result.edges);
 
-        // Navigate to the new project after a short delay
-        setTimeout(() => {
-          reset();
-          router.push(`/project/${projectId}`);
-        }, 1500);
+            // Navigate to the new project after a short delay
+            setTimeout(() => {
+              reset();
+              router.push(`/project/${projectId}`);
+            }, 1500);
+          } catch (error) {
+            console.error('Failed to create project:', error);
+          }
+        };
+
+        createAndNavigate();
       } else {
         // Editor mode: Add to current project
         const currentNodes = useProjectStore.getState().nodes;
