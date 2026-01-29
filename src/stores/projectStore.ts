@@ -89,7 +89,7 @@ interface ProjectState {
 }
 
 // Helper to get storage key for a project
-const getProjectStorageKey = (id: string) => `cocoonflow-project-${id}`;
+const getProjectStorageKey = (id: string) => `meridian-project-${id}`;
 
 // Helper to save project data to localStorage
 const saveProjectToStorage = (id: string, data: { project: Project; nodes: CocoonNode[]; edges: CocoonEdge[] }) => {
@@ -542,7 +542,7 @@ export const useProjectStore = create<ProjectState>()(
       },
     }),
     {
-      name: 'cocoonflow-current-project',
+      name: 'meridian-current-project',
       partialize: (state) => ({
         currentProjectId: state.currentProjectId,
       }),

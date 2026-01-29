@@ -55,7 +55,7 @@ export default function Dashboard() {
     // Check if we need to migrate
     if (migrated) return;
 
-    const oldProjectData = localStorage.getItem('cocoonflow-project');
+    const oldProjectData = localStorage.getItem('meridian-project');
     if (oldProjectData) {
       try {
         const data = JSON.parse(oldProjectData);
@@ -66,7 +66,7 @@ export default function Dashboard() {
           const newId = crypto.randomUUID();
 
           // Save the project data under the new key
-          localStorage.setItem(`cocoonflow-project-${newId}`, JSON.stringify({
+          localStorage.setItem(`meridian-project-${newId}`, JSON.stringify({
             project: { ...project, id: newId },
             nodes: nodes || [],
             edges: edges || [],
@@ -89,8 +89,8 @@ export default function Dashboard() {
             });
 
             // Fix: we need to update the stored project data with the correct ID
-            localStorage.removeItem(`cocoonflow-project-${newId}`);
-            localStorage.setItem(`cocoonflow-project-${lastProject.id}`, JSON.stringify({
+            localStorage.removeItem(`meridian-project-${newId}`);
+            localStorage.setItem(`meridian-project-${lastProject.id}`, JSON.stringify({
               project: { ...project, id: lastProject.id },
               nodes: nodes || [],
               edges: edges || [],
@@ -98,7 +98,7 @@ export default function Dashboard() {
           }
 
           // Remove old data
-          localStorage.removeItem('cocoonflow-project');
+          localStorage.removeItem('meridian-project');
         }
       } catch (e) {
         console.error('Failed to migrate old project data:', e);
@@ -184,10 +184,10 @@ export default function Dashboard() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-emerald-500 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">CF</span>
+                <span className="text-white font-bold text-lg">M</span>
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-foreground">CocoonFlow</h1>
+                <h1 className="text-2xl font-bold text-foreground">Meridian</h1>
                 <p className="text-sm text-muted-foreground">Semantic Cocoon Planner</p>
               </div>
             </div>

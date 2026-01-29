@@ -1,15 +1,13 @@
 'use client';
 
-import { useCallback, useRef, useEffect } from 'react';
+import { useCallback, useRef, useEffect, useState } from 'react';
 import {
   ReactFlow,
-  Background,
   Controls,
   MiniMap,
   ReactFlowProvider,
   useReactFlow,
   Panel,
-  BackgroundVariant,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
@@ -27,6 +25,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Plus, Target, Layers, FileText, ExternalLink } from 'lucide-react';
 import { useTheme } from '@/components/ThemeProvider';
+import AnimatedBackground from './AnimatedBackground';
 
 const nodeTypes = {
   cocoonNode: CustomNode,
@@ -50,6 +49,36 @@ function CanvasContent() {
   const { resolvedTheme } = useTheme();
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const isDark = resolvedTheme === 'dark';
+
+  // Track node dragging for animated background
+  const [isNodeDragging, setIsNodeDragging] = useState(false);
+  const [dragPosition, setDragPosition] = useState<{ x: number; y: number } | null>(null);
+
+  const handleNodeDragStart = useCallback((event: React.MouseEvent) => {
+    setIsNodeDragging(true);
+    if (reactFlowWrapper.current) {
+      const rect = reactFlowWrapper.current.getBoundingClientRect();
+      setDragPosition({
+        x: event.clientX - rect.left,
+        y: event.clientY - rect.top
+      });
+    }
+  }, []);
+
+  const handleNodeDrag = useCallback((event: React.MouseEvent) => {
+    if (reactFlowWrapper.current) {
+      const rect = reactFlowWrapper.current.getBoundingClientRect();
+      setDragPosition({
+        x: event.clientX - rect.left,
+        y: event.clientY - rect.top
+      });
+    }
+  }, []);
+
+  const handleNodeDragStop = useCallback(() => {
+    setIsNodeDragging(false);
+    setDragPosition(null);
+  }, []);
 
   // Handle keyboard delete for selected edges/nodes
   useEffect(() => {
@@ -96,7 +125,7 @@ function CanvasContent() {
     (event: React.DragEvent) => {
       event.preventDefault();
 
-      const type = event.dataTransfer.getData('application/cocoonflow-node') as NodeType;
+      const type = event.dataTransfer.getData('application/meridian-node') as NodeType;
       if (!type) return;
 
       const position = screenToFlowPosition({
@@ -121,6 +150,9 @@ function CanvasContent() {
         onPaneClick={handlePaneClick}
         onDragOver={handleDragOver}
         onDrop={handleDrop}
+        onNodeDragStart={handleNodeDragStart}
+        onNodeDrag={handleNodeDrag}
+        onNodeDragStop={handleNodeDragStop}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         defaultEdgeOptions={{
@@ -132,13 +164,14 @@ function CanvasContent() {
         maxZoom={2}
         deleteKeyCode={['Backspace', 'Delete']}
         multiSelectionKeyCode={['Meta', 'Control']}
-        className={isDark ? 'bg-neutral-900' : 'bg-gray-50'}
+        className={isDark ? 'bg-[#1a1a1f]' : 'bg-gray-50'}
       >
-        <Background
-          variant={BackgroundVariant.Dots}
-          gap={20}
-          size={1}
-          color={isDark ? '#404040' : '#d1d5db'}
+        <AnimatedBackground
+          isDark={isDark}
+          gap={24}
+          dotSize={1.5}
+          isDragging={isNodeDragging}
+          dragPosition={dragPosition}
         />
         <Controls position="bottom-left" className="dark:bg-neutral-800 dark:border-neutral-700 dark:text-white" />
         {showMinimap && (
@@ -162,7 +195,7 @@ function CanvasContent() {
               }
             }}
             maskColor={isDark ? 'rgba(0, 0, 0, 0.3)' : 'rgba(0, 0, 0, 0.1)'}
-            className={isDark ? 'bg-neutral-800 border-neutral-700 rounded-lg shadow-lg' : 'bg-white border rounded-lg shadow-lg'}
+            className={isDark ? 'bg-[#2a2a32] border-[#3a3a42] rounded-lg shadow-lg' : 'bg-white border rounded-lg shadow-lg'}
           />
         )}
 

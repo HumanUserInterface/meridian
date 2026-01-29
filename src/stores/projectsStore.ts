@@ -55,7 +55,7 @@ export const useProjectsStore = create<ProjectsState>()(
         }));
         // Remove project data from localStorage
         if (typeof window !== 'undefined') {
-          localStorage.removeItem(`cocoonflow-project-${id}`);
+          localStorage.removeItem(`meridian-project-${id}`);
         }
       },
 
@@ -78,7 +78,7 @@ export const useProjectsStore = create<ProjectsState>()(
       },
     }),
     {
-      name: 'cocoonflow-projects',
+      name: 'meridian-projects',
     }
   )
 );

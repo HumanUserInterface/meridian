@@ -70,7 +70,7 @@ export default function Header() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${project.name.replace(/\s+/g, '-').toLowerCase()}-cocoon.json`;
+    a.download = `${project.name.replace(/\s+/g, '-').toLowerCase()}.json`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -148,7 +148,7 @@ export default function Header() {
 
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-emerald-500 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">CF</span>
+            <span className="text-white font-bold text-sm">M</span>
           </div>
           {isEditingName ? (
             <Input

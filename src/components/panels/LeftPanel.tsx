@@ -72,7 +72,7 @@ export default function LeftPanel() {
   );
 
   const handleDragStart = (event: React.DragEvent, nodeType: NodeType) => {
-    event.dataTransfer.setData('application/cocoonflow-node', nodeType);
+    event.dataTransfer.setData('application/meridian-node', nodeType);
     event.dataTransfer.effectAllowed = 'move';
   };
 

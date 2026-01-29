@@ -9,7 +9,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "CocoonFlow - SEO Semantic Cocoon Planner",
+  title: "Meridian - SEO Semantic Cocoon Planner",
   description: "Visual semantic cocoon and topical authority planning tool for SEO professionals",
   keywords: ["SEO", "semantic cocoon", "content planning", "topical authority", "internal linking"],
 };
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 // Script to prevent flash of wrong theme
 const themeScript = `
   (function() {
-    const stored = localStorage.getItem('cocoonflow-theme');
+    const stored = localStorage.getItem('meridian-theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const isDark = stored === 'dark' || (stored !== 'light' && prefersDark);
     if (isDark) document.documentElement.classList.add('dark');
