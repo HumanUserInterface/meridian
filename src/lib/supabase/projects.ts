@@ -227,65 +227,19 @@ export async function createProject(
 
   console.log('Creating project for user:', user.id);
 
-  // Force refresh the session to get a fresh token
-  const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
-  if (refreshError) {
-    console.error('Failed to refresh session:', refreshError.message);
-  } else {
-    console.log('Session refreshed, new expiry:', refreshData.session?.expires_at);
+  // Use RPC function to create project (bypasses RLS issues)
+  const { data, error } = await supabase.rpc('create_project_for_user', {
+    p_name: name,
+    p_description: description || null,
+    p_domain: domain || null,
+  });
+
+  if (error) {
+    console.error('Error creating project:', error.message);
+    throw new Error(`Failed to create project: ${error.message}`);
   }
 
-  // Get the access token
-  const { data: sessionData } = await supabase.auth.getSession();
-  const accessToken = sessionData.session?.access_token;
-
-  // Debug: Decode JWT to see what's in it
-  if (accessToken) {
-    try {
-      const payload = JSON.parse(atob(accessToken.split('.')[1]));
-      console.log('JWT payload:', {
-        sub: payload.sub,
-        aud: payload.aud,
-        role: payload.role,
-        exp: new Date(payload.exp * 1000).toISOString(),
-        iss: payload.iss,
-      });
-      console.log('User ID match:', payload.sub === user.id);
-    } catch (e) {
-      console.log('Failed to decode JWT:', e);
-    }
-  }
-
-  console.log('Access token exists:', !!accessToken);
-
-  // Try direct fetch with manual auth header to debug
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/projects`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        'Authorization': `Bearer ${accessToken}`,
-        'Prefer': 'return=representation',
-      },
-      body: JSON.stringify({
-        user_id: user.id,
-        name,
-        description: description || null,
-        domain: domain || null,
-      }),
-    }
-  );
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error('Error creating project:', response.status, errorText);
-    throw new Error(`Failed to create project: ${errorText}`);
-  }
-
-  const data = await response.json();
-  return data[0].id;
+  return data as string;
 }
 
 export async function deleteProject(projectId: string): Promise<void> {
