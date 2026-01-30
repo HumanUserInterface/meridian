@@ -14,6 +14,7 @@ import RightPanel from '@/components/panels/RightPanel';
 import ExportModal from '@/components/modals/ExportModal';
 import ImportModal from '@/components/modals/ImportModal';
 import AIGeneratorModal from '@/components/modals/AIGeneratorModal';
+import SettingsModal from '@/components/modals/SettingsModal';
 import AIGenerationStatus from '@/components/AIGenerationStatus';
 import { cn } from '@/lib/utils';
 import { ChevronRight, ChevronLeft, Loader2 } from 'lucide-react';
@@ -177,6 +178,7 @@ export default function ProjectEditor() {
       <ExportModal />
       <ImportModal />
       <AIGeneratorModal mode="editor" />
+      <SettingsModal />
 
       {/* Floating AI Generation Status */}
       <AIGenerationStatus />
