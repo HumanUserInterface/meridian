@@ -1,7 +1,7 @@
-# CocoonFlow - Claude Code Context
+# Meridian - Claude Code Context
 
 ## Project Overview
-CocoonFlow is a visual semantic cocoon and topical authority planning tool for SEO professionals. It's an alternative to generic mind-mapping tools, focused entirely on creating, visualizing, and optimizing semantic cocoon structures (content silos/topical clusters) for websites.
+Meridian is a visual semantic cocoon and topical authority planning tool for SEO professionals. It's an alternative to generic mind-mapping tools, focused entirely on creating, visualizing, and optimizing semantic cocoon structures (content silos/topical clusters) for websites.
 
 ## Tech Stack
 - **Framework**: Next.js 16 (App Router)
@@ -10,34 +10,83 @@ CocoonFlow is a visual semantic cocoon and topical authority planning tool for S
 - **Canvas**: React Flow 12 (@xyflow/react)
 - **State**: Zustand with localStorage persistence
 - **Icons**: Lucide React
+- **Auth**: Supabase
+
+## Branding
+
+### Brand Color
+- **Primary**: `#1A4A6B` (dark teal/blue)
+- **Text on dark**: `#E8F1F5` (light grayish blue)
+
+### Logo Assets
+- `/public/logo.svg` - Full logo with "MERIDIAN" text and tagline
+- `/public/logo-icon.svg` - Icon only (cocoon compass symbol)
+- `/src/app/icon.png` - Favicon (cocoon icon with rounded corners)
+
+### Logo Usage
+- Sidebar header: `<img src="/logo-icon.svg" />` (40x40)
+- Editor header: `<img src="/logo-icon.svg" />` (32x32)
+- User avatars: Solid `#1A4A6B` background with white initials
 
 ## Project Structure
 ```
 src/
 ├── app/                    # Next.js app router pages
+│   ├── layout.tsx         # Root layout with ThemeProvider
+│   ├── page.tsx           # Dashboard/Projects page
+│   ├── icon.png           # Favicon
+│   ├── globals.css        # Global styles & theme variables
+│   ├── api/               # API routes (AI, parsing)
+│   ├── auth/              # Authentication pages
+│   ├── dashboard/         # Projects dashboard
+│   ├── project/[id]/      # Project editor page
+│   ├── settings/          # User settings
+│   └── workspace/         # Workspace settings
 ├── components/
+│   ├── Header.tsx         # Editor header with logo
+│   ├── ThemeProvider.tsx  # Theme context (light/dark/system)
+│   ├── ThemeToggle.tsx    # Theme selector dropdown
 │   ├── canvas/            # React Flow components
 │   │   ├── Canvas.tsx     # Main canvas with ReactFlow
 │   │   ├── CustomNode.tsx # SEO node component
-│   │   └── CustomEdge.tsx # Link edge component
+│   │   ├── CustomEdge.tsx # Link edge component
+│   │   └── AnimatedBackground.tsx
+│   ├── dashboard/         # Dashboard components
+│   │   ├── Sidebar.tsx    # Sidebar with logo
+│   │   └── ProjectCard.tsx
 │   ├── panels/            # Side panels
-│   │   ├── LeftPanel.tsx  # Node list & drag-to-add
+│   │   ├── LeftPanel.tsx  # Node types with color config
 │   │   ├── RightPanel.tsx # Properties & analysis tabs
 │   │   ├── NodeProperties.tsx
 │   │   ├── EdgeProperties.tsx
 │   │   └── AnalysisPanel.tsx
 │   ├── modals/            # Dialog modals
+│   │   ├── AIGeneratorModal.tsx
+│   │   ├── ExportModal.tsx
+│   │   └── ImportModal.tsx
 │   └── ui/                # shadcn/ui components
 ├── stores/
 │   ├── projectStore.ts    # Nodes, edges, project data (persisted)
-│   └── uiStore.ts         # UI state (panels, selection, modals)
+│   ├── projectsStore.ts   # Projects list state
+│   ├── authStore.ts       # Authentication state
+│   ├── uiStore.ts         # UI state (panels, modals)
+│   └── aiGeneratorStore.ts # AI generation state
 ├── lib/
 │   ├── analysis.ts        # Cocoon health scoring algorithms
 │   ├── export.ts          # Export to CSV, JSON, XML sitemap
 │   ├── import.ts          # CSV import parsing
-│   └── utils.ts           # Tailwind merge utility
-└── types/
-    └── index.ts           # All TypeScript interfaces
+│   ├── utils.ts           # Tailwind merge utility
+│   ├── supabase/          # Supabase client/server utilities
+│   └── ai/                # AI integration
+│       ├── together.ts    # Together AI API
+│       ├── orchestrator.ts # AI workflow orchestration
+│       ├── agents/        # AI agents (builder, linker, research)
+│       ├── autoLayout.ts  # Auto-layout algorithm
+│       └── prompts.ts     # AI prompts
+├── types/
+│   └── index.ts           # All TypeScript interfaces
+├── hooks/                 # Custom React hooks
+└── middleware.ts          # Next.js middleware
 ```
 
 ## Key Concepts
@@ -81,6 +130,14 @@ src/
 - `edges`: React Flow edges with CocoonEdgeData
 - Actions: addNode, updateNode, deleteNode, onConnect, etc.
 
+### projectsStore (Zustand + persist)
+- `projects`: List of project metadata
+- Actions: createProject, updateProjectMeta, deleteProject
+
+### authStore (Zustand)
+- `user`: Current authenticated user
+- Actions: initialize, signIn, signOut
+
 ### uiStore (Zustand)
 - Panel visibility states
 - Selected node/edge IDs
@@ -117,7 +174,7 @@ npm run lint     # ESLint
 
 ### LocalStorage Persistence
 - Project auto-saves via Zustand persist middleware
-- Key: `cocoonflow-project`
+- Theme preference key: `meridian-theme`
 
 ### Analysis Algorithm
 - Health score (0-100) based on:
@@ -126,25 +183,10 @@ npm run lint     # ESLint
   - Link depth > 3 levels (-10)
   - Missing keywords (-3 per node, max -15)
 
-## Future Development (Per Spec)
-
-### Phase 2 - SEO Enhancement
-- [ ] Keyword management with volume/difficulty
-- [ ] URL structure planner with depth warnings
-- [x] XML sitemap export with priorities (implemented)
-- [ ] Keyword cannibalization detection
-
-### Phase 3 - Collaboration
-- [ ] Supabase integration for cloud storage
-- [ ] Shareable public/private links
-- [ ] Comments on nodes
-- [ ] Version history
-
-### Phase 4 - AI Features
-- [ ] AI subtopic suggestions from pillar keyword
-- [ ] Auto-generate meta descriptions
-- [ ] Smart layout optimization
-- [ ] Content gap analysis
+### AI Features
+- AI Generate button in header (amber/orange gradient)
+- Uses Together AI for cocoon generation
+- Auto-layout algorithm for organizing nodes
 
 ## Keyboard Shortcuts
 | Key | Action |
@@ -153,3 +195,9 @@ npm run lint     # ESLint
 | `]` | Toggle right panel |
 | `Delete/Backspace` | Delete selected node/edge |
 | `Cmd/Ctrl + click` | Multi-select |
+
+## Theme System
+- Uses OkLCH color space for accessibility
+- Three modes: Light, Dark, System
+- Theme stored in localStorage (`meridian-theme`)
+- Dark mode applies `.dark` class to `documentElement`

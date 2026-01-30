@@ -85,13 +85,13 @@ export default function ProjectCard({ project }: ProjectCardProps) {
   return (
     <>
       <div
-        className="group relative bg-card border rounded-xl p-5 hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-lg dark:hover:shadow-blue-500/10 transition-all duration-200 cursor-pointer"
+        className="group relative bg-card border rounded-xl p-5 hover:border-[#1A4A6B] hover:shadow-lg dark:hover:shadow-[#1A4A6B]/10 transition-all duration-200 cursor-pointer"
         onClick={handleOpen}
       >
         {/* Header */}
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-3 flex-1 min-w-0">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-emerald-500 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#1A4A6B' }}>
               <FileText className="w-5 h-5 text-white" />
             </div>
             <div className="flex-1 min-w-0">

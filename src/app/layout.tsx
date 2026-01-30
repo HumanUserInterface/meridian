@@ -12,6 +12,10 @@ export const metadata: Metadata = {
   title: "Meridian - SEO Semantic Cocoon Planner",
   description: "Visual semantic cocoon and topical authority planning tool for SEO professionals",
   keywords: ["SEO", "semantic cocoon", "content planning", "topical authority", "internal linking"],
+  icons: {
+    icon: "/icon.png",
+    apple: "/icon.png",
+  },
 };
 
 // Script to prevent flash of wrong theme

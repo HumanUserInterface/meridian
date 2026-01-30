@@ -166,9 +166,7 @@ export default function Header() {
         </TooltipProvider>
 
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-emerald-500 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">M</span>
-          </div>
+          <img src="/logo-icon.svg" alt="Meridian" className="w-8 h-8" />
           {isEditingName ? (
             <Input
               value={projectName}
@@ -181,7 +179,7 @@ export default function Header() {
           ) : (
             <button
               onClick={() => setIsEditingName(true)}
-              className="font-semibold text-foreground hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              className="font-semibold text-foreground hover:text-[#1A4A6B] dark:hover:text-[#5B8DAB] transition-colors"
             >
               {project.name}
             </button>
@@ -320,7 +318,7 @@ export default function Header() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="rounded-full">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: '#1A4A6B' }}>
                 <span className="text-white text-sm font-medium">
                   {user?.email?.charAt(0).toUpperCase() || 'U'}
                 </span>

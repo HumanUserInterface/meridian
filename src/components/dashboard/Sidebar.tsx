@@ -91,7 +91,7 @@ export default function Sidebar() {
               {item.icon}
               <span className="flex-1 text-left">{item.label}</span>
               {item.badge && (
-                <span className="text-xs px-1.5 py-0.5 rounded bg-gradient-to-r from-blue-500 to-purple-500 text-white">
+                <span className="text-xs px-1.5 py-0.5 rounded text-white" style={{ backgroundColor: '#1A4A6B' }}>
                   {item.badge}
                 </span>
               )}
@@ -111,9 +111,7 @@ export default function Sidebar() {
       {/* Logo */}
       <div className="p-4 border-b">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-emerald-500 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-lg">M</span>
-          </div>
+          <img src="/logo-icon.svg" alt="Meridian" className="w-10 h-10" />
           <div>
             <h1 className="font-bold text-foreground">Meridian</h1>
             <p className="text-xs text-muted-foreground">Semantic Cocoon Planner</p>
@@ -152,7 +150,7 @@ export default function Sidebar() {
               variant="ghost"
               className="w-full justify-start gap-3 px-3 h-auto py-2"
             >
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center flex-shrink-0">
+              <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#1A4A6B' }}>
                 <span className="text-white text-sm font-medium">
                   {user?.email?.charAt(0).toUpperCase() || 'U'}
                 </span>

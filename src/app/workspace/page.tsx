@@ -43,11 +43,11 @@ export default function WorkspacePage() {
         <main className="flex-1 p-6 max-w-4xl">
           <div className="space-y-6">
             {/* Upgrade Banner */}
-            <Card className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border-blue-500/20">
+            <Card className="border-[#1A4A6B]/20" style={{ background: 'linear-gradient(to right, rgba(26, 74, 107, 0.1), rgba(26, 74, 107, 0.05))' }}>
               <CardContent className="py-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: '#1A4A6B' }}>
                       <Sparkles className="w-6 h-6 text-white" />
                     </div>
                     <div>
@@ -57,7 +57,7 @@ export default function WorkspacePage() {
                       </p>
                     </div>
                   </div>
-                  <Button className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600">
+                  <Button className="text-white hover:opacity-90" style={{ backgroundColor: '#1A4A6B' }}>
                     Upgrade Now
                   </Button>
                 </div>
