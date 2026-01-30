@@ -5,6 +5,7 @@ import {
   BaseEdge,
   EdgeLabelRenderer,
   getBezierPath,
+  getSmoothStepPath,
   Position,
 } from '@xyflow/react';
 import { LinkType } from '@/types';
@@ -61,16 +62,29 @@ function CustomEdge({
   selected,
 }: CustomEdgeProps) {
   const { setSelectedEdgeId } = useUIStore();
-  const { updateEdge } = useProjectStore();
+  const { updateEdge, project } = useProjectStore();
 
-  const [edgePath, labelX, labelY] = getBezierPath({
-    sourceX,
-    sourceY,
-    sourcePosition,
-    targetX,
-    targetY,
-    targetPosition,
-  });
+  const linkStyle = project.settings?.linkStyle || 'smooth';
+
+  // Use different path based on link style setting
+  const [edgePath, labelX, labelY] = linkStyle === 'orthogonal'
+    ? getSmoothStepPath({
+        sourceX,
+        sourceY,
+        sourcePosition,
+        targetX,
+        targetY,
+        targetPosition,
+        borderRadius: 8,
+      })
+    : getBezierPath({
+        sourceX,
+        sourceY,
+        sourcePosition,
+        targetX,
+        targetY,
+        targetPosition,
+      });
 
   const linkType = data?.linkType || 'contextual';
   const config = linkTypeConfig[linkType];

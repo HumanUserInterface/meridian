@@ -49,6 +49,9 @@ export interface Keyword {
   assignedNodeId?: string;
 }
 
+// Link Style
+export type LinkStyle = 'smooth' | 'orthogonal';
+
 // Project Settings
 export interface ProjectSettings {
   autoSave: boolean;
@@ -57,6 +60,7 @@ export interface ProjectSettings {
   gridSize: number;
   defaultNodeType: NodeType;
   theme: 'light' | 'dark' | 'system';
+  linkStyle: LinkStyle;
 }
 
 // Project

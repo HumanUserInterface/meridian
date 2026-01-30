@@ -19,7 +19,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { NodeType } from '@/types';
+import { NodeType, LinkStyle } from '@/types';
+
+const linkStyleOptions: { value: LinkStyle; label: string; description: string }[] = [
+  { value: 'smooth', label: 'Smooth (Bezier)', description: 'Curved lines between nodes' },
+  { value: 'orthogonal', label: 'Square (Orthogonal)', description: 'Right-angle lines around nodes' },
+];
 
 const nodeTypeOptions: { value: NodeType; label: string }[] = [
   { value: 'pillar', label: 'Pillar Page' },
@@ -120,6 +125,28 @@ export default function SettingsModal() {
                 />
               </div>
             )}
+
+            <div className="space-y-2">
+              <Label>Link Style</Label>
+              <Select
+                value={settings.linkStyle || 'smooth'}
+                onValueChange={(value: LinkStyle) => updateSettings({ linkStyle: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {linkStyleOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      <div>
+                        <div>{option.label}</div>
+                        <div className="text-xs text-muted-foreground">{option.description}</div>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           {/* Default Settings */}

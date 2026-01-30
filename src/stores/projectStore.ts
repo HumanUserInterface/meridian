@@ -31,6 +31,7 @@ const defaultSettings: ProjectSettings = {
   gridSize: 20,
   defaultNodeType: 'cluster',
   theme: 'system',
+  linkStyle: 'smooth',
 };
 
 const defaultProject: Project = {
