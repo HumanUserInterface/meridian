@@ -168,8 +168,8 @@ function CanvasContent() {
       >
         <AnimatedBackground
           isDark={isDark}
-          gap={24}
-          dotSize={1.5}
+          gap={28}
+          dotSize={1}
           isDragging={isNodeDragging}
           dragPosition={dragPosition}
         />

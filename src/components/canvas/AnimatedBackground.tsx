@@ -68,8 +68,8 @@ export default function AnimatedBackground({
       const offsetX = ((tx / zoom) % screenGap + screenGap) % screenGap;
       const offsetY = ((ty / zoom) % screenGap + screenGap) % screenGap;
 
-      const baseColor = isDark ? 'rgba(80, 80, 95, 0.9)' : 'rgba(170, 170, 185, 0.9)';
-      const activeColor = isDark ? 'rgba(120, 120, 150, 1)' : 'rgba(130, 130, 160, 1)';
+      const baseColor = isDark ? 'rgba(80, 80, 95, 0.3)' : 'rgba(180, 180, 195, 0.35)';
+      const activeColor = isDark ? 'rgba(120, 120, 150, 0.5)' : 'rgba(150, 150, 170, 0.5)';
       const time = Date.now();
 
       // Draw dots at fixed screen intervals
