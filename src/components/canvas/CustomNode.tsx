@@ -433,15 +433,14 @@ function CustomNode({ id, data, selected }: CustomNodeProps & { positionAbsolute
           onClick={handleAIExpand}
           disabled={isExpanding}
           className={cn(
-            'absolute -bottom-3 -right-3 z-10',
-            'w-7 h-7 rounded-full',
-            'bg-gradient-to-br from-amber-400 to-orange-500',
-            'shadow-lg shadow-amber-500/30',
+            'absolute bottom-2 right-2 z-10',
+            'w-8 h-8 rounded-lg',
+            'bg-brand-seafoam',
+            'shadow-md',
             'flex items-center justify-center',
             'transition-all duration-200',
-            'hover:scale-110 hover:shadow-amber-500/50',
-            'disabled:opacity-70 disabled:cursor-not-allowed',
-            'border-2 border-white'
+            'hover:scale-105 hover:shadow-lg',
+            'disabled:opacity-70 disabled:cursor-not-allowed'
           )}
           title="Generate 5 related pages with AI"
         >
