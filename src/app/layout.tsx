@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { Zalando_Sans_Expanded, Space_Mono } from "next/font/google";
+import { Zalando_Sans, Space_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
-const zalandoSans = Zalando_Sans_Expanded({
+const zalandoSans = Zalando_Sans({
   variable: "--font-zalando",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],

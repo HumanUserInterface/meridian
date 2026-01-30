@@ -46,14 +46,14 @@ Use these custom classes throughout the app:
 
 | Font | Usage | Weights |
 |------|-------|---------|
-| **Zalando Sans Expanded** | Body text, UI elements | 400, 500, 600, 700 |
+| **Zalando Sans** | Body text, UI elements | 400, 500, 600, 700 |
 | **Space Mono** | Display text, code, monospace elements | 400, 700 |
 
 ### CSS Font Stack
 
 ```css
 :root {
-  --font-sans: 'Zalando Sans Expanded', system-ui, sans-serif;
+  --font-sans: 'Zalando Sans', system-ui, sans-serif;
   --font-display: 'Space Mono', monospace;
   --font-mono: 'Space Mono', monospace;
 }
@@ -61,9 +61,9 @@ Use these custom classes throughout the app:
 
 ### Usage Guidelines
 
-- **Body text**: Zalando Sans Expanded Regular (400)
-- **UI labels**: Zalando Sans Expanded Medium (500)
-- **Buttons**: Zalando Sans Expanded SemiBold (600)
+- **Body text**: Zalando Sans Regular (400)
+- **UI labels**: Zalando Sans Medium (500)
+- **Buttons**: Zalando Sans SemiBold (600)
 - **Display text**: Space Mono (use `.font-display` class)
 - **Code/mono**: Space Mono
 
