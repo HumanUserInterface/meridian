@@ -28,8 +28,8 @@ Meridian is a visual semantic cocoon and topical authority planning tool for SEO
 | Midnight | `#1A1A1A` | `--brand-midnight` | `bg-brand-midnight` |
 
 ### Fonts
+- **Body**: Zalando Sans Expanded (Google Font)
 - **Display/Mono**: Space Mono (Google Font)
-- **Body**: Inter (Google Font)
 
 ### Logo Assets
 - `/public/logo.svg` - Full logo with text (light mode)

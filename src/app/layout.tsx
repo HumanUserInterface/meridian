@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { Inter, Space_Mono } from "next/font/google";
+import { Zalando_Sans_Expanded, Space_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
-const inter = Inter({
-  variable: "--font-inter",
+const zalandoSans = Zalando_Sans_Expanded({
+  variable: "--font-zalando",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 const spaceMono = Space_Mono({
@@ -44,7 +45,7 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body className={`${inter.variable} ${spaceMono.variable} font-sans antialiased`}>
+      <body className={`${zalandoSans.variable} ${spaceMono.variable} font-sans antialiased`}>
         <ThemeProvider>
           {children}
         </ThemeProvider>
