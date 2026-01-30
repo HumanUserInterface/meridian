@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { useAuthStore } from '@/stores/authStore'
+import { useTheme } from '@/components/ThemeProvider'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -61,6 +62,7 @@ export default function Sidebar() {
   const router = useRouter()
   const pathname = usePathname()
   const { user, initialize, signOut } = useAuthStore()
+  const { resolvedTheme } = useTheme()
 
   useEffect(() => {
     initialize()
@@ -110,7 +112,11 @@ export default function Sidebar() {
     <aside className="w-64 bg-background border-r flex flex-col h-screen sticky top-0">
       {/* Logo */}
       <div className="p-4 border-b">
-        <img src="/logo.svg" alt="Meridian - Semantic Cocoon Planner" className="h-12 w-auto" />
+        <img
+          src={resolvedTheme === 'dark' ? '/logo-dark.svg' : '/logo.svg'}
+          alt="Meridian - Semantic Cocoon Planner"
+          className="h-12 w-auto"
+        />
       </div>
 
       {/* Main Navigation */}

@@ -32,7 +32,8 @@ Meridian is a visual semantic cocoon and topical authority planning tool for SEO
 - **Body**: Inter (Google Font)
 
 ### Logo Assets
-- `/public/logo.svg` - Full logo with text
+- `/public/logo.svg` - Full logo with text (light mode)
+- `/public/logo-dark.svg` - Full logo with text (dark mode)
 - `/public/logo-icon.svg` - Icon only
 - `/src/app/icon.png` - Favicon
 

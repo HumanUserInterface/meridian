@@ -106,8 +106,8 @@
   --card-foreground: var(--brand-cloud);
   --popover: #262626;
   --popover-foreground: var(--brand-cloud);
-  --primary: var(--brand-deep-ocean);
-  --primary-foreground: #FFFFFF;
+  --primary: #FFFFFF;
+  --primary-foreground: var(--brand-midnight);
   --secondary: #374151;
   --secondary-foreground: var(--brand-cloud);
   --muted: #374151;
@@ -125,8 +125,8 @@
   --chart-5: var(--brand-cloud);
   --sidebar: #1f1f1f;
   --sidebar-foreground: var(--brand-cloud);
-  --sidebar-primary: var(--brand-deep-ocean);
-  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-primary: #FFFFFF;
+  --sidebar-primary-foreground: var(--brand-midnight);
   --sidebar-accent: #374151;
   --sidebar-accent-foreground: var(--brand-cloud);
   --sidebar-border: #374151;

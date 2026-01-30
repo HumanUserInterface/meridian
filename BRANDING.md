@@ -72,8 +72,9 @@ Use these custom classes throughout the app:
 
 | File | Usage |
 |------|-------|
-| `/public/logo.svg` | Full logo with text (header, marketing) |
-| `/public/logo-icon.svg` | Icon only (favicon size, small spaces) |
+| `/public/logo.svg` | Full logo with text - light mode (dark text) |
+| `/public/logo-dark.svg` | Full logo with text - dark mode (light text) |
+| `/public/logo-icon.svg` | Icon only (works on both backgrounds) |
 | `/src/app/icon.png` | Favicon |
 
 ### Clear Space
@@ -133,8 +134,9 @@ In dark mode, invert the usage:
 |------------|-----------|
 | Cloud background | Midnight background |
 | Midnight text | Cloud text |
-| Deep Ocean buttons | Deep Ocean buttons (unchanged) |
+| Deep Ocean buttons | White buttons with dark text |
 | Seafoam accents | Seafoam accents (unchanged) |
+| `logo.svg` | `logo-dark.svg` |
 
 ## Do's and Don'ts
 
