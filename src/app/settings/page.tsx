@@ -64,8 +64,8 @@ export default function SettingsPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ backgroundColor: '#1A4A6B' }}>
-                    <span className="text-white text-2xl font-medium">
+                  <div className="w-16 h-16 rounded-full flex items-center justify-center bg-primary">
+                    <span className="text-primary-foreground text-2xl font-medium">
                       {user?.email?.charAt(0).toUpperCase() || 'U'}
                     </span>
                   </div>

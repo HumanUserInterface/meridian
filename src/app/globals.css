@@ -1,13 +1,88 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* TRT Makron Font Family */
+@font-face {
+  font-family: 'TRT Makron';
+  src: url('/fonts/TRTMakronDemo-Thin-BF69673eac94c16.ttf') format('truetype');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TRT Makron';
+  src: url('/fonts/TRTMakronDemo-ExtraLight-BF69673eabb20d9.ttf') format('truetype');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TRT Makron';
+  src: url('/fonts/TRTMakronDemo-Light-BF69673eabe4f91.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TRT Makron';
+  src: url('/fonts/TRTMakronDemo-Regular-BF69673eacc0cbf.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TRT Makron';
+  src: url('/fonts/TRTMakronDemo-Medium-BF69673eacaad40.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TRT Makron';
+  src: url('/fonts/TRTMakronDemo-SemiBold-BF69673eac7d2a6.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TRT Makron';
+  src: url('/fonts/TRTMakronDemo-Bold-BF69673eabd5fbf.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TRT Makron';
+  src: url('/fonts/TRTMakronDemo-ExtraBold-BF69673eacdb678.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-inter);
+  --font-display: 'TRT Makron', var(--font-inter), system-ui, sans-serif;
   --font-mono: var(--font-geist-mono);
+
+  /* Brand Colors */
+  --color-brand-cloud: #E8F1F5;
+  --color-brand-deep-ocean: #1A4A6B;
+  --color-brand-seafoam: #3A9A85;
+  --color-brand-steel-blue: #5B8DAB;
+  --color-brand-sky: #8FC1DA;
+  --color-brand-midnight: #1A1A1A;
+
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -47,72 +122,80 @@
 }
 
 :root {
+  /* Brand Colors */
+  --brand-cloud: #E8F1F5;
+  --brand-deep-ocean: #1A4A6B;
+  --brand-seafoam: #3A9A85;
+  --brand-steel-blue: #5B8DAB;
+  --brand-sky: #8FC1DA;
+  --brand-midnight: #1A1A1A;
+
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --background: #FFFFFF;
+  --foreground: var(--brand-midnight);
+  --card: #FFFFFF;
+  --card-foreground: var(--brand-midnight);
+  --popover: #FFFFFF;
+  --popover-foreground: var(--brand-midnight);
+  --primary: var(--brand-deep-ocean);
+  --primary-foreground: #FFFFFF;
+  --secondary: var(--brand-cloud);
+  --secondary-foreground: var(--brand-deep-ocean);
+  --muted: var(--brand-cloud);
+  --muted-foreground: #64748b;
+  --accent: var(--brand-cloud);
+  --accent-foreground: var(--brand-deep-ocean);
+  --destructive: #dc2626;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: var(--brand-steel-blue);
+  --chart-1: var(--brand-deep-ocean);
+  --chart-2: var(--brand-seafoam);
+  --chart-3: var(--brand-steel-blue);
+  --chart-4: var(--brand-sky);
+  --chart-5: var(--brand-cloud);
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: var(--brand-midnight);
+  --sidebar-primary: var(--brand-deep-ocean);
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: var(--brand-cloud);
+  --sidebar-accent-foreground: var(--brand-deep-ocean);
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: var(--brand-steel-blue);
 }
 
 .dark {
-  --background: oklch(0.23 0.005 270);
-  --foreground: oklch(0.95 0 0);
-  --card: oklch(0.27 0.005 270);
-  --card-foreground: oklch(0.95 0 0);
-  --popover: oklch(0.27 0.005 270);
-  --popover-foreground: oklch(0.95 0 0);
-  --primary: oklch(0.9 0 0);
-  --primary-foreground: oklch(0.2 0 0);
-  --secondary: oklch(0.32 0.005 270);
-  --secondary-foreground: oklch(0.95 0 0);
-  --muted: oklch(0.32 0.005 270);
-  --muted-foreground: oklch(0.65 0 0);
-  --accent: oklch(0.32 0.005 270);
-  --accent-foreground: oklch(0.95 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(0.38 0.005 270);
-  --input: oklch(0.32 0.005 270);
-  --ring: oklch(0.5 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.25 0.005 270);
-  --sidebar-foreground: oklch(0.95 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.95 0 0);
-  --sidebar-accent: oklch(0.32 0.005 270);
-  --sidebar-accent-foreground: oklch(0.95 0 0);
-  --sidebar-border: oklch(0.38 0.005 270);
-  --sidebar-ring: oklch(0.5 0 0);
+  --background: var(--brand-midnight);
+  --foreground: var(--brand-cloud);
+  --card: #262626;
+  --card-foreground: var(--brand-cloud);
+  --popover: #262626;
+  --popover-foreground: var(--brand-cloud);
+  --primary: var(--brand-deep-ocean);
+  --primary-foreground: #FFFFFF;
+  --secondary: #374151;
+  --secondary-foreground: var(--brand-cloud);
+  --muted: #374151;
+  --muted-foreground: #9ca3af;
+  --accent: #374151;
+  --accent-foreground: var(--brand-cloud);
+  --destructive: #ef4444;
+  --border: #374151;
+  --input: #374151;
+  --ring: var(--brand-steel-blue);
+  --chart-1: var(--brand-steel-blue);
+  --chart-2: var(--brand-seafoam);
+  --chart-3: var(--brand-sky);
+  --chart-4: var(--brand-deep-ocean);
+  --chart-5: var(--brand-cloud);
+  --sidebar: #1f1f1f;
+  --sidebar-foreground: var(--brand-cloud);
+  --sidebar-primary: var(--brand-deep-ocean);
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #374151;
+  --sidebar-accent-foreground: var(--brand-cloud);
+  --sidebar-border: #374151;
+  --sidebar-ring: var(--brand-steel-blue);
 }
 
 @layer base {
@@ -122,22 +205,48 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Heading styles with TRT Makron */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'TRT Makron', var(--font-inter), system-ui, sans-serif;
+  }
+
+  h1 {
+    @apply text-3xl font-semibold tracking-tight;
+  }
+
+  h2 {
+    @apply text-2xl font-semibold tracking-tight;
+  }
+
+  h3 {
+    @apply text-xl font-medium;
+  }
+
+  h4 {
+    @apply text-lg font-medium;
+  }
+}
+
+/* Utility class for display font */
+.font-display {
+  font-family: 'TRT Makron', var(--font-inter), system-ui, sans-serif;
 }
 
 /* React Flow dark mode overrides */
 .dark .react-flow__controls {
-  background: oklch(0.27 0.005 270);
-  border-color: oklch(0.38 0.005 270);
+  background: #262626;
+  border-color: #374151;
 }
 
 .dark .react-flow__controls-button {
-  background: oklch(0.27 0.005 270);
-  border-color: oklch(0.38 0.005 270);
-  fill: oklch(0.95 0 0);
+  background: #262626;
+  border-color: #374151;
+  fill: var(--brand-cloud);
 }
 
 .dark .react-flow__controls-button:hover {
-  background: oklch(0.32 0.005 270);
+  background: #374151;
 }
 
 .dark .react-flow__controls-button svg {
@@ -145,18 +254,18 @@
 }
 
 .dark .react-flow__edge-path {
-  stroke: oklch(0.55 0 0);
+  stroke: #6b7280;
 }
 
 .dark .react-flow__edge.selected .react-flow__edge-path {
-  stroke: oklch(0.6 0.2 260);
+  stroke: var(--brand-steel-blue);
 }
 
 .dark .react-flow__handle {
-  background: oklch(0.5 0 0);
-  border-color: oklch(0.38 0.005 270);
+  background: #6b7280;
+  border-color: #374151;
 }
 
 .dark .react-flow__minimap {
-  background: oklch(0.27 0.005 270);
+  background: #262626;
 }

@@ -287,7 +287,7 @@ export default function AIGeneratorModal({ mode }: AIGeneratorModalProps) {
       case 'research':
         return { label: 'Research', icon: '🔍', color: 'text-blue-500' };
       case 'build':
-        return { label: 'Building', icon: '🏗️', color: 'text-amber-500' };
+        return { label: 'Building', icon: '🏗️', color: 'text-brand-seafoam' };
       case 'link':
         return { label: 'Linking', icon: '🔗', color: 'text-emerald-500' };
       case 'complete':
@@ -305,7 +305,7 @@ export default function AIGeneratorModal({ mode }: AIGeneratorModalProps) {
       <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-amber-500" />
+            <Sparkles className="w-5 h-5 text-brand-seafoam" />
             Generate Semantic Cocoon with AI
           </DialogTitle>
           <DialogDescription>
@@ -348,7 +348,7 @@ export default function AIGeneratorModal({ mode }: AIGeneratorModalProps) {
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Progress</span>
-                <span className="font-mono font-medium text-amber-500">{progress}%</span>
+                <span className="font-mono font-medium text-brand-seafoam">{progress}%</span>
               </div>
               <Progress value={progress} className="h-3" />
             </div>

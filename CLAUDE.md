@@ -14,19 +14,27 @@ Meridian is a visual semantic cocoon and topical authority planning tool for SEO
 
 ## Branding
 
-### Brand Color
-- **Primary**: `#1A4A6B` (dark teal/blue)
-- **Text on dark**: `#E8F1F5` (light grayish blue)
+**See `BRANDING.md` for complete brand guidelines.**
+
+### Quick Reference
+
+| Color | Hex | CSS Variable | Tailwind Class |
+|-------|-----|--------------|----------------|
+| Cloud | `#E8F1F5` | `--brand-cloud` | `bg-brand-cloud` |
+| Deep Ocean | `#1A4A6B` | `--brand-deep-ocean` | `bg-brand-deep-ocean` / `bg-primary` |
+| Seafoam | `#3A9A85` | `--brand-seafoam` | `bg-brand-seafoam` |
+| Steel Blue | `#5B8DAB` | `--brand-steel-blue` | `bg-brand-steel-blue` |
+| Sky | `#8FC1DA` | `--brand-sky` | `bg-brand-sky` |
+| Midnight | `#1A1A1A` | `--brand-midnight` | `bg-brand-midnight` |
+
+### Fonts
+- **Display/Headings**: TRT Makron (loaded from `/public/fonts/`)
+- **Body**: Inter (Google Font)
 
 ### Logo Assets
-- `/public/logo.svg` - Full logo with "MERIDIAN" text and tagline
-- `/public/logo-icon.svg` - Icon only (cocoon compass symbol)
-- `/src/app/icon.png` - Favicon (cocoon icon with rounded corners)
-
-### Logo Usage
-- Sidebar header: `<img src="/logo-icon.svg" />` (40x40)
-- Editor header: `<img src="/logo-icon.svg" />` (32x32)
-- User avatars: Solid `#1A4A6B` background with white initials
+- `/public/logo.svg` - Full logo with text
+- `/public/logo-icon.svg` - Icon only
+- `/src/app/icon.png` - Favicon
 
 ## Project Structure
 ```
@@ -184,7 +192,7 @@ npm run lint     # ESLint
   - Missing keywords (-3 per node, max -15)
 
 ### AI Features
-- AI Generate button in header (amber/orange gradient)
+- AI Generate button uses Seafoam color (`bg-brand-seafoam`)
 - Uses Together AI for cocoon generation
 - Auto-layout algorithm for organizing nodes
 

@@ -207,7 +207,7 @@ export default function Dashboard() {
                 onClick={() => setAIGeneratorModalOpen(true)}
                 className="gap-2"
               >
-                <Sparkles className="w-4 h-4 text-amber-500" />
+                <Sparkles className="w-4 h-4 text-brand-seafoam" />
                 Generate with AI
               </Button>
               <Button onClick={() => setShowNewProjectDialog(true)} className="gap-2">

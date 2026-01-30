@@ -43,12 +43,12 @@ export default function WorkspacePage() {
         <main className="flex-1 p-6 max-w-4xl">
           <div className="space-y-6">
             {/* Upgrade Banner */}
-            <Card className="border-[#1A4A6B]/20" style={{ background: 'linear-gradient(to right, rgba(26, 74, 107, 0.1), rgba(26, 74, 107, 0.05))' }}>
+            <Card className="border-primary/20 bg-primary/5">
               <CardContent className="py-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: '#1A4A6B' }}>
-                      <Sparkles className="w-6 h-6 text-white" />
+                    <div className="w-12 h-12 rounded-full flex items-center justify-center bg-primary">
+                      <Sparkles className="w-6 h-6 text-primary-foreground" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-lg">Upgrade to Pro</h3>
@@ -57,7 +57,7 @@ export default function WorkspacePage() {
                       </p>
                     </div>
                   </div>
-                  <Button className="text-white hover:opacity-90" style={{ backgroundColor: '#1A4A6B' }}>
+                  <Button>
                     Upgrade Now
                   </Button>
                 </div>
@@ -87,15 +87,15 @@ export default function WorkspacePage() {
                   <p className="text-sm font-medium">Includes:</p>
                   <ul className="text-sm text-muted-foreground space-y-1">
                     <li className="flex items-center gap-2">
-                      <Check className="w-4 h-4 text-green-500" />
+                      <Check className="w-4 h-4 text-brand-seafoam" />
                       Unlimited projects
                     </li>
                     <li className="flex items-center gap-2">
-                      <Check className="w-4 h-4 text-green-500" />
+                      <Check className="w-4 h-4 text-brand-seafoam" />
                       Export to CSV, JSON, XML
                     </li>
                     <li className="flex items-center gap-2">
-                      <Check className="w-4 h-4 text-green-500" />
+                      <Check className="w-4 h-4 text-brand-seafoam" />
                       Local storage
                     </li>
                   </ul>

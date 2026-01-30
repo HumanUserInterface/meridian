@@ -179,7 +179,7 @@ export default function Header() {
           ) : (
             <button
               onClick={() => setIsEditingName(true)}
-              className="font-semibold text-foreground hover:text-[#1A4A6B] dark:hover:text-[#5B8DAB] transition-colors"
+              className="font-semibold text-foreground hover:text-primary transition-colors"
             >
               {project.name}
             </button>
@@ -234,7 +234,7 @@ export default function Header() {
         <Button
           variant="default"
           size="sm"
-          className="gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white"
+          className="gap-2 bg-brand-seafoam hover:bg-brand-seafoam/90 text-white"
           onClick={() => setAIGeneratorModalOpen(true)}
         >
           <Sparkles className="w-4 h-4" />
@@ -318,8 +318,8 @@ export default function Header() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="rounded-full">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: '#1A4A6B' }}>
-                <span className="text-white text-sm font-medium">
+              <div className="w-8 h-8 rounded-full flex items-center justify-center bg-primary">
+                <span className="text-primary-foreground text-sm font-medium">
                   {user?.email?.charAt(0).toUpperCase() || 'U'}
                 </span>
               </div>

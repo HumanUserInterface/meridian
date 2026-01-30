@@ -111,7 +111,7 @@ export default function AIGenerationStatus() {
         {/* Header */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-amber-500" />
+            <Sparkles className="w-4 h-4 text-brand-seafoam" />
             <span className="font-medium text-sm">AI Generation</span>
           </div>
           {isGenerating ? (
@@ -130,7 +130,7 @@ export default function AIGenerationStatus() {
           <>
             <div className="flex items-center justify-between text-sm mb-2">
               <span className="text-muted-foreground capitalize">{stage}</span>
-              <span className="font-mono text-amber-500">{progress}%</span>
+              <span className="font-mono text-brand-seafoam">{progress}%</span>
             </div>
             <Progress value={progress} className="h-2 mb-2" />
             <p className="text-xs text-muted-foreground truncate">{message}</p>
