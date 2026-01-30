@@ -23,7 +23,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Plus, Target, Layers, FileText, ExternalLink } from 'lucide-react';
+import { Plus, Target, Layers, FileText, ExternalLink, Map, EyeOff } from 'lucide-react';
 import { useTheme } from '@/components/ThemeProvider';
 import AnimatedBackground from './AnimatedBackground';
 
@@ -44,7 +44,7 @@ const nodeOptions: { type: NodeType; label: string; icon: React.ElementType }[] 
 
 function CanvasContent() {
   const { nodes, edges, onNodesChange, onEdgesChange, onConnect, addNode, deleteEdge } = useProjectStore();
-  const { showMinimap, clearSelection, setSelectedNodeId, selectedEdgeId, setSelectedEdgeId } = useUIStore();
+  const { showMinimap, setShowMinimap, clearSelection, setSelectedNodeId, selectedEdgeId, setSelectedEdgeId } = useUIStore();
   const { screenToFlowPosition } = useReactFlow();
   const { resolvedTheme } = useTheme();
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
@@ -198,6 +198,18 @@ function CanvasContent() {
             className={isDark ? 'bg-[#2a2a32] border-[#3a3a42] rounded-lg shadow-lg' : 'bg-white border rounded-lg shadow-lg'}
           />
         )}
+
+        <Panel position="bottom-right" className={showMinimap ? 'mb-[140px]' : ''}>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setShowMinimap(!showMinimap)}
+            className={isDark ? 'bg-[#2a2a32] border-[#3a3a42] hover:bg-[#3a3a42]' : 'bg-white'}
+            title={showMinimap ? 'Hide minimap' : 'Show minimap'}
+          >
+            {showMinimap ? <EyeOff className="w-4 h-4" /> : <Map className="w-4 h-4" />}
+          </Button>
+        </Panel>
 
         <Panel position="top-left" className="flex gap-2">
           <DropdownMenu>
