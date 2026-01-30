@@ -110,13 +110,7 @@ export default function Sidebar() {
     <aside className="w-64 bg-background border-r flex flex-col h-screen sticky top-0">
       {/* Logo */}
       <div className="p-4 border-b">
-        <div className="flex items-center gap-3">
-          <img src="/logo-icon.svg" alt="Meridian" className="w-10 h-10" />
-          <div>
-            <h1 className="font-bold text-foreground">Meridian</h1>
-            <p className="text-xs text-muted-foreground">Semantic Cocoon Planner</p>
-          </div>
-        </div>
+        <img src="/logo.svg" alt="Meridian - Semantic Cocoon Planner" className="h-12 w-auto" />
       </div>
 
       {/* Main Navigation */}

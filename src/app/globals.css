@@ -1,79 +1,14 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-/* TRT Makron Font Family */
-@font-face {
-  font-family: 'TRT Makron';
-  src: url('/fonts/TRTMakronDemo-Thin-BF69673eac94c16.ttf') format('truetype');
-  font-weight: 100;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'TRT Makron';
-  src: url('/fonts/TRTMakronDemo-ExtraLight-BF69673eabb20d9.ttf') format('truetype');
-  font-weight: 200;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'TRT Makron';
-  src: url('/fonts/TRTMakronDemo-Light-BF69673eabe4f91.ttf') format('truetype');
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'TRT Makron';
-  src: url('/fonts/TRTMakronDemo-Regular-BF69673eacc0cbf.ttf') format('truetype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'TRT Makron';
-  src: url('/fonts/TRTMakronDemo-Medium-BF69673eacaad40.ttf') format('truetype');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'TRT Makron';
-  src: url('/fonts/TRTMakronDemo-SemiBold-BF69673eac7d2a6.ttf') format('truetype');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'TRT Makron';
-  src: url('/fonts/TRTMakronDemo-Bold-BF69673eabd5fbf.ttf') format('truetype');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'TRT Makron';
-  src: url('/fonts/TRTMakronDemo-ExtraBold-BF69673eacdb678.ttf') format('truetype');
-  font-weight: 800;
-  font-style: normal;
-  font-display: swap;
-}
-
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-inter);
-  --font-display: 'TRT Makron', var(--font-inter), system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-space-mono), monospace;
+  --font-mono: var(--font-space-mono), monospace;
 
   /* Brand Colors */
   --color-brand-cloud: #E8F1F5;
@@ -205,32 +140,11 @@
   body {
     @apply bg-background text-foreground;
   }
-
-  /* Heading styles with TRT Makron */
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'TRT Makron', var(--font-inter), system-ui, sans-serif;
-  }
-
-  h1 {
-    @apply text-3xl font-semibold tracking-tight;
-  }
-
-  h2 {
-    @apply text-2xl font-semibold tracking-tight;
-  }
-
-  h3 {
-    @apply text-xl font-medium;
-  }
-
-  h4 {
-    @apply text-lg font-medium;
-  }
 }
 
-/* Utility class for display font */
+/* Utility class for display/mono font */
 .font-display {
-  font-family: 'TRT Makron', var(--font-inter), system-ui, sans-serif;
+  font-family: var(--font-space-mono), monospace;
 }
 
 /* React Flow dark mode overrides */

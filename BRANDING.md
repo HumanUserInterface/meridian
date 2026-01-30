@@ -46,25 +46,25 @@ Use these custom classes throughout the app:
 
 | Font | Usage | Weights |
 |------|-------|---------|
-| **TRT Makron** | Headings, logo text, display | Regular, Medium, SemiBold, Bold |
+| **Space Mono** | Display text, code, monospace elements | 400, 700 |
 | **Inter** | Body text, UI elements | 400, 500, 600, 700 |
 
 ### CSS Font Stack
 
 ```css
 :root {
-  --font-display: 'TRT Makron', 'Inter', system-ui, sans-serif;
+  --font-display: 'Space Mono', monospace;
   --font-body: 'Inter', system-ui, sans-serif;
 }
 ```
 
 ### Usage Guidelines
 
-- **H1-H2**: TRT Makron SemiBold/Bold
-- **H3-H4**: TRT Makron Medium
+- **Display text**: Space Mono (use `.font-display` class)
 - **Body text**: Inter Regular (400)
 - **UI labels**: Inter Medium (500)
 - **Buttons**: Inter SemiBold (600)
+- **Code/mono**: Space Mono
 
 ## Logo
 
@@ -142,7 +142,7 @@ In dark mode, invert the usage:
 - Use Deep Ocean for primary actions
 - Use Cloud for backgrounds
 - Maintain color proportions
-- Use TRT Makron for headings only
+- Use Space Mono for display/code elements
 - Keep sufficient contrast
 
 ### Don'ts

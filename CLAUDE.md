@@ -28,7 +28,7 @@ Meridian is a visual semantic cocoon and topical authority planning tool for SEO
 | Midnight | `#1A1A1A` | `--brand-midnight` | `bg-brand-midnight` |
 
 ### Fonts
-- **Display/Headings**: TRT Makron (loaded from `/public/fonts/`)
+- **Display/Mono**: Space Mono (Google Font)
 - **Body**: Inter (Google Font)
 
 ### Logo Assets
