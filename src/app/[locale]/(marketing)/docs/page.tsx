@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { getDictionary } from '@/i18n/dictionaries'
 import { locales, type Locale } from '@/i18n/config'
-import { BookOpen } from 'lucide-react'
+import StubPage from '@/components/marketing/sections/StubPage'
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://meridian.app'
 
@@ -32,21 +32,11 @@ export default async function DocsPage({
   const dict = await getDictionary(locale as Locale)
 
   return (
-    <section className="py-24">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-        <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
-          <BookOpen className="w-8 h-8 text-muted-foreground" />
-        </div>
-        <h1 className="font-display text-4xl font-bold text-foreground mb-4">
-          {dict.stubs.docs.title}
-        </h1>
-        <p className="text-lg text-muted-foreground mb-8">
-          {dict.stubs.docs.subtitle}
-        </p>
-        <p className="text-muted-foreground">
-          {dict.stubs.docs.coming_soon}
-        </p>
-      </div>
-    </section>
+    <StubPage
+      title={dict.stubs.docs.title}
+      subtitle={dict.stubs.docs.subtitle}
+      comingSoon={dict.stubs.docs.coming_soon}
+      icon="book-open"
+    />
   )
 }

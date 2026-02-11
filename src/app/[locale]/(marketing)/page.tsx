@@ -8,6 +8,7 @@ import PricingSection from '@/components/marketing/sections/PricingSection'
 import FAQSection from '@/components/marketing/sections/FAQSection'
 import CTASection from '@/components/marketing/sections/CTASection'
 import JsonLd from '@/components/marketing/JsonLd'
+import HomePageClient from '@/components/marketing/HomePageClient'
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://meridian.app'
 
@@ -80,7 +81,7 @@ export default async function HomePage({
   }
 
   return (
-    <>
+    <HomePageClient>
       <JsonLd data={jsonLd} />
       <JsonLd data={faqJsonLd} />
       <HeroSection dict={dict} locale={locale} />
@@ -89,6 +90,6 @@ export default async function HomePage({
       <PricingSection dict={dict} />
       <FAQSection dict={dict} />
       <CTASection dict={dict} />
-    </>
+    </HomePageClient>
   )
 }

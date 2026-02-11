@@ -2,8 +2,10 @@
 
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
 import { Check } from 'lucide-react'
+import BlurText from '@/components/reactbits/BlurText'
+import SpotlightCard from '@/components/reactbits/SpotlightCard'
+import Magnet from '@/components/reactbits/Magnet'
 import FadeInOnScroll from '../animations/FadeInOnScroll'
 
 interface PricingSectionProps {
@@ -26,24 +28,30 @@ interface PricingSectionProps {
 
 export default function PricingSection({ dict, standalone }: PricingSectionProps) {
   return (
-    <section id="pricing" className={standalone ? 'py-24' : 'py-24 bg-muted/30'}>
+    <section id="pricing" className={standalone ? 'py-28' : 'py-28 bg-muted/30'}>
       <div className="max-w-3xl mx-auto px-4 sm:px-6">
-        <FadeInOnScroll>
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">
-              {dict.pricing.title}
-            </h2>
+        <div className="text-center max-w-2xl mx-auto mb-14">
+          <BlurText
+            text={dict.pricing.title}
+            delay={60}
+            animateBy="words"
+            className="font-display text-3xl sm:text-4xl font-bold text-foreground justify-center"
+          />
+          <FadeInOnScroll delay={0.15}>
             <p className="mt-4 text-lg text-muted-foreground">
               {dict.pricing.subtitle}
             </p>
-          </div>
-        </FadeInOnScroll>
+          </FadeInOnScroll>
+        </div>
 
         <FadeInOnScroll delay={0.1}>
-          <Card className="max-w-lg mx-auto border-primary/30 shadow-lg">
-            <CardContent className="pt-8 pb-8">
+          <SpotlightCard
+            className="max-w-lg mx-auto border-primary/20 shadow-xl hover:shadow-2xl transition-shadow"
+            spotlightColor="rgba(58, 154, 133, 0.15)"
+          >
+            <div className="relative z-10">
               <div className="text-center mb-6">
-                <span className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-4">
+                <span className="inline-block px-3 py-1 rounded-full bg-brand-seafoam/10 text-brand-seafoam text-sm font-semibold mb-4 border border-brand-seafoam/20">
                   {dict.pricing.plan.name}
                 </span>
                 <div className="flex items-baseline justify-center gap-1">
@@ -68,11 +76,13 @@ export default function PricingSection({ dict, standalone }: PricingSectionProps
                 ))}
               </ul>
 
-              <Button className="w-full" size="lg" asChild>
-                <Link href="/auth/signup">{dict.pricing.plan.cta}</Link>
-              </Button>
-            </CardContent>
-          </Card>
+              <Magnet padding={80} magnetStrength={4} wrapperClassName="w-full">
+                <Button className="w-full text-base" size="lg" asChild>
+                  <Link href="/auth/signup">{dict.pricing.plan.cta}</Link>
+                </Button>
+              </Magnet>
+            </div>
+          </SpotlightCard>
         </FadeInOnScroll>
       </div>
     </section>
