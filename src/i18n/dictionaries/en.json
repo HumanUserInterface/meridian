@@ -1,0 +1,175 @@
+{
+  "nav": {
+    "pricing": "Pricing",
+    "about": "About",
+    "blog": "Blog",
+    "changelog": "Changelog",
+    "docs": "Docs",
+    "login": "Log in",
+    "signup": "Start for free"
+  },
+  "hero": {
+    "title": "Build Semantic Cocoons That Rank",
+    "subtitle": "The visual planner for SEO professionals. Design topical authority structures, map internal links, and generate optimized content architectures — all in one place.",
+    "cta_primary": "Start for free",
+    "cta_secondary": "See how it works"
+  },
+  "features": {
+    "title": "Everything You Need to Plan SEO Content",
+    "subtitle": "From initial research to published cocoon — Meridian covers the entire semantic planning workflow.",
+    "items": [
+      {
+        "title": "Visual Cocoon Builder",
+        "description": "Drag-and-drop canvas to design pillar, cluster, and supporting page hierarchies with real-time visual feedback."
+      },
+      {
+        "title": "AI Content Generation",
+        "description": "Generate complete cocoon structures from a single topic. Our AI agents build nodes, create links, and suggest keywords."
+      },
+      {
+        "title": "Link Analysis",
+        "description": "Automatic orphan page detection, link depth analysis, and health scoring to keep your internal linking strategy tight."
+      },
+      {
+        "title": "Keyword Mapping",
+        "description": "Assign primary and secondary keywords to every page. Track coverage and find gaps in your topical authority."
+      },
+      {
+        "title": "Multi-Format Export",
+        "description": "Export your cocoons as CSV, JSON, XML sitemaps, or visual PDF/images. Ready for any workflow or client deliverable."
+      },
+      {
+        "title": "Content Status Tracking",
+        "description": "Track each page from planned to published. Visual status badges keep your entire team aligned on content progress."
+      }
+    ]
+  },
+  "howItWorks": {
+    "title": "How It Works",
+    "subtitle": "Go from topic idea to optimized cocoon in three steps.",
+    "steps": [
+      {
+        "title": "Define Your Topic",
+        "description": "Start with a seed keyword or topic. Meridian's AI analyzes search intent and suggests a complete page structure."
+      },
+      {
+        "title": "Build Your Cocoon",
+        "description": "Use the visual canvas to arrange pages, create internal links, and assign keywords. Drag, connect, and optimize."
+      },
+      {
+        "title": "Export & Publish",
+        "description": "Export your plan as a sitemap, brief, or spreadsheet. Hand off to writers or integrate directly into your CMS."
+      }
+    ]
+  },
+  "pricing": {
+    "title": "Simple, Transparent Pricing",
+    "subtitle": "One plan. Everything included. No surprises.",
+    "plan": {
+      "name": "Pro",
+      "price": "$35",
+      "period": "/month",
+      "description": "Everything you need to plan and execute semantic SEO strategies.",
+      "cta": "Get started",
+      "features": [
+        "Unlimited cocoon projects",
+        "AI-powered cocoon generation",
+        "Visual drag-and-drop editor",
+        "10 node types (pillar, cluster, blog, etc.)",
+        "5 link types with anchor text mapping",
+        "Health score & orphan detection",
+        "Export to CSV, JSON, XML sitemap",
+        "Export to PDF & image",
+        "Content status tracking",
+        "Team collaboration",
+        "Priority support"
+      ]
+    }
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "items": [
+      {
+        "question": "What is a semantic cocoon?",
+        "answer": "A semantic cocoon is an internal linking strategy that groups related content pages into topic clusters. It helps search engines understand your site's topical authority and improves rankings for targeted keywords."
+      },
+      {
+        "question": "Do I need SEO experience to use Meridian?",
+        "answer": "Not at all. Meridian's AI can generate complete cocoon structures from a single topic. If you're experienced, you'll love the granular control over node types, link strategies, and keyword mapping."
+      },
+      {
+        "question": "Can I try Meridian for free?",
+        "answer": "Yes! Sign up for a free account to explore the visual builder and create your first project. The free plan includes unlimited projects with local storage."
+      },
+      {
+        "question": "What export formats are supported?",
+        "answer": "Meridian supports CSV, JSON, XML sitemap, PDF, and image exports. You can hand off your cocoon plans to writers, developers, or import them directly into your CMS."
+      },
+      {
+        "question": "Can I collaborate with my team?",
+        "answer": "Team collaboration is available on the Pro plan. Invite team members to your workspace, share projects, and work together on cocoon strategies in real time."
+      }
+    ]
+  },
+  "cta": {
+    "title": "Ready to Build Your First Cocoon?",
+    "subtitle": "Join SEO professionals who use Meridian to plan content that ranks.",
+    "button": "Start for free"
+  },
+  "footer": {
+    "product": "Product",
+    "resources": "Resources",
+    "company": "Company",
+    "legal": "Legal",
+    "copyright": "Meridian. All rights reserved.",
+    "links": {
+      "features": "Features",
+      "pricing": "Pricing",
+      "changelog": "Changelog",
+      "docs": "Documentation",
+      "blog": "Blog",
+      "about": "About",
+      "contact": "Contact",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service"
+    }
+  },
+  "about": {
+    "hero_title": "Built for SEO Professionals",
+    "hero_subtitle": "Meridian was created because planning semantic cocoons in spreadsheets and generic mind-map tools isn't good enough. SEO deserves purpose-built software.",
+    "why_title": "Why Meridian?",
+    "why_description": "Existing tools force SEO professionals to work in spreadsheets, generic diagramming apps, or overpriced enterprise suites. None of them understand the specific needs of semantic cocoon planning — node types, link strategies, content status tracking, and topical authority analysis. Meridian fills that gap.",
+    "values_title": "Our Approach",
+    "values": [
+      {
+        "title": "Purpose-Built",
+        "description": "Every feature is designed specifically for semantic SEO workflows. No generic fluff."
+      },
+      {
+        "title": "Visual First",
+        "description": "SEO strategy is spatial. Meridian lets you see your entire content architecture at a glance."
+      },
+      {
+        "title": "AI-Assisted",
+        "description": "AI handles the tedious parts — generating structures, suggesting links, finding keyword gaps."
+      }
+    ]
+  },
+  "stubs": {
+    "blog": {
+      "title": "Blog",
+      "subtitle": "SEO insights, product updates, and content strategy tips.",
+      "coming_soon": "Coming soon. We're preparing our first articles."
+    },
+    "changelog": {
+      "title": "Changelog",
+      "subtitle": "Track every update, feature, and improvement to Meridian.",
+      "coming_soon": "Coming soon. Stay tuned for our first release notes."
+    },
+    "docs": {
+      "title": "Documentation",
+      "subtitle": "Learn how to get the most out of Meridian.",
+      "coming_soon": "Coming soon. Our documentation is being written."
+    }
+  }
+}

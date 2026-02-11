@@ -40,7 +40,7 @@ const navItems: NavItem[] = [
   {
     label: 'Cocoon Planner',
     icon: <Layers className="w-5 h-5" />,
-    href: '/',
+    href: '/dashboard',
   },
 ]
 

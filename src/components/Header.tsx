@@ -113,7 +113,7 @@ export default function Header() {
   };
 
   const handleBackToDashboard = () => {
-    router.push('/');
+    router.push('/dashboard');
   };
 
   const handleSignOut = async () => {

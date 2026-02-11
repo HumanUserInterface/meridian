@@ -113,7 +113,7 @@ export default function ProjectEditor() {
           {error}
         </p>
         <button
-          onClick={() => router.push('/')}
+          onClick={() => router.push('/dashboard')}
           className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
         >
           Back to Dashboard

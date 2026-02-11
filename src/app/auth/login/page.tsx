@@ -12,7 +12,7 @@ import { Loader2, LogIn } from 'lucide-react'
 export default function LoginPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const redirectTo = searchParams.get('redirectTo') || '/'
+  const redirectTo = searchParams.get('redirectTo') || '/dashboard'
 
   const { signIn } = useAuthStore()
 

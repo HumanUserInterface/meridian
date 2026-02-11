@@ -1,0 +1,175 @@
+{
+  "nav": {
+    "pricing": "Tarifs",
+    "about": "A propos",
+    "blog": "Blog",
+    "changelog": "Changelog",
+    "docs": "Docs",
+    "login": "Se connecter",
+    "signup": "Commencer gratuitement"
+  },
+  "hero": {
+    "title": "Construisez des Cocons Semantiques qui Rankent",
+    "subtitle": "Le planificateur visuel pour les professionnels du SEO. Concevez des structures d'autorite topique, cartographiez les liens internes et generez des architectures de contenu optimisees — tout en un seul endroit.",
+    "cta_primary": "Commencer gratuitement",
+    "cta_secondary": "Voir comment ca marche"
+  },
+  "features": {
+    "title": "Tout ce Dont Vous Avez Besoin pour Planifier du Contenu SEO",
+    "subtitle": "De la recherche initiale au cocon publie — Meridian couvre l'ensemble du flux de planification semantique.",
+    "items": [
+      {
+        "title": "Editeur Visuel de Cocons",
+        "description": "Canvas glisser-deposer pour concevoir des hierarchies de pages pilier, cluster et support avec un retour visuel en temps reel."
+      },
+      {
+        "title": "Generation de Contenu par IA",
+        "description": "Generez des structures de cocons completes a partir d'un seul sujet. Nos agents IA construisent les noeuds, creent les liens et suggerent les mots-cles."
+      },
+      {
+        "title": "Analyse des Liens",
+        "description": "Detection automatique des pages orphelines, analyse de profondeur des liens et score de sante pour maintenir votre strategie de maillage interne."
+      },
+      {
+        "title": "Mapping de Mots-cles",
+        "description": "Assignez des mots-cles primaires et secondaires a chaque page. Suivez la couverture et trouvez les lacunes dans votre autorite topique."
+      },
+      {
+        "title": "Export Multi-Format",
+        "description": "Exportez vos cocons en CSV, JSON, sitemaps XML ou en PDF/images visuels. Pret pour n'importe quel workflow ou livrable client."
+      },
+      {
+        "title": "Suivi du Statut de Contenu",
+        "description": "Suivez chaque page de la planification a la publication. Des badges de statut visuels gardent toute votre equipe alignee sur l'avancement du contenu."
+      }
+    ]
+  },
+  "howItWorks": {
+    "title": "Comment Ca Marche",
+    "subtitle": "Passez d'une idee de sujet a un cocon optimise en trois etapes.",
+    "steps": [
+      {
+        "title": "Definissez Votre Sujet",
+        "description": "Commencez avec un mot-cle ou un sujet. L'IA de Meridian analyse l'intention de recherche et suggere une structure de pages complete."
+      },
+      {
+        "title": "Construisez Votre Cocon",
+        "description": "Utilisez le canvas visuel pour arranger les pages, creer des liens internes et assigner des mots-cles. Glissez, connectez et optimisez."
+      },
+      {
+        "title": "Exportez et Publiez",
+        "description": "Exportez votre plan en sitemap, brief ou tableur. Transmettez aux redacteurs ou integrez directement dans votre CMS."
+      }
+    ]
+  },
+  "pricing": {
+    "title": "Tarification Simple et Transparente",
+    "subtitle": "Un seul plan. Tout inclus. Pas de surprises.",
+    "plan": {
+      "name": "Pro",
+      "price": "35 $",
+      "period": "/mois",
+      "description": "Tout ce dont vous avez besoin pour planifier et executer des strategies SEO semantiques.",
+      "cta": "Commencer",
+      "features": [
+        "Projets de cocons illimites",
+        "Generation de cocons par IA",
+        "Editeur visuel glisser-deposer",
+        "10 types de noeuds (pilier, cluster, blog, etc.)",
+        "5 types de liens avec mapping d'ancres",
+        "Score de sante et detection d'orphelins",
+        "Export CSV, JSON, sitemap XML",
+        "Export PDF et image",
+        "Suivi du statut de contenu",
+        "Collaboration en equipe",
+        "Support prioritaire"
+      ]
+    }
+  },
+  "faq": {
+    "title": "Questions Frequentes",
+    "items": [
+      {
+        "question": "Qu'est-ce qu'un cocon semantique ?",
+        "answer": "Un cocon semantique est une strategie de maillage interne qui regroupe les pages de contenu liees en clusters thematiques. Cela aide les moteurs de recherche a comprendre l'autorite topique de votre site et ameliore le classement pour les mots-cles cibles."
+      },
+      {
+        "question": "Ai-je besoin d'experience en SEO pour utiliser Meridian ?",
+        "answer": "Pas du tout. L'IA de Meridian peut generer des structures de cocons completes a partir d'un seul sujet. Si vous etes experimente, vous apprecierez le controle granulaire sur les types de noeuds, les strategies de liens et le mapping de mots-cles."
+      },
+      {
+        "question": "Puis-je essayer Meridian gratuitement ?",
+        "answer": "Oui ! Inscrivez-vous pour un compte gratuit pour explorer l'editeur visuel et creer votre premier projet. Le plan gratuit inclut des projets illimites avec stockage local."
+      },
+      {
+        "question": "Quels formats d'export sont supportes ?",
+        "answer": "Meridian supporte les exports CSV, JSON, sitemap XML, PDF et image. Vous pouvez transmettre vos plans de cocons aux redacteurs, developpeurs ou les importer directement dans votre CMS."
+      },
+      {
+        "question": "Puis-je collaborer avec mon equipe ?",
+        "answer": "La collaboration en equipe est disponible sur le plan Pro. Invitez des membres d'equipe dans votre espace de travail, partagez des projets et travaillez ensemble sur les strategies de cocons en temps reel."
+      }
+    ]
+  },
+  "cta": {
+    "title": "Pret a Construire Votre Premier Cocon ?",
+    "subtitle": "Rejoignez les professionnels du SEO qui utilisent Meridian pour planifier du contenu qui ranke.",
+    "button": "Commencer gratuitement"
+  },
+  "footer": {
+    "product": "Produit",
+    "resources": "Ressources",
+    "company": "Entreprise",
+    "legal": "Legal",
+    "copyright": "Meridian. Tous droits reserves.",
+    "links": {
+      "features": "Fonctionnalites",
+      "pricing": "Tarifs",
+      "changelog": "Changelog",
+      "docs": "Documentation",
+      "blog": "Blog",
+      "about": "A propos",
+      "contact": "Contact",
+      "privacy": "Politique de confidentialite",
+      "terms": "Conditions d'utilisation"
+    }
+  },
+  "about": {
+    "hero_title": "Concu pour les Professionnels du SEO",
+    "hero_subtitle": "Meridian a ete cree parce que planifier des cocons semantiques dans des tableurs et des outils de mind-mapping generiques ne suffit pas. Le SEO merite un logiciel dedie.",
+    "why_title": "Pourquoi Meridian ?",
+    "why_description": "Les outils existants forcent les professionnels du SEO a travailler dans des tableurs, des applications de diagrammes generiques ou des suites entreprise hors de prix. Aucun d'entre eux ne comprend les besoins specifiques de la planification de cocons semantiques — types de noeuds, strategies de liens, suivi du statut de contenu et analyse d'autorite topique. Meridian comble ce vide.",
+    "values_title": "Notre Approche",
+    "values": [
+      {
+        "title": "Dedie au SEO",
+        "description": "Chaque fonctionnalite est concue specifiquement pour les workflows SEO semantiques. Pas de superflu generique."
+      },
+      {
+        "title": "Visuel Avant Tout",
+        "description": "La strategie SEO est spatiale. Meridian vous permet de voir toute votre architecture de contenu en un coup d'oeil."
+      },
+      {
+        "title": "Assiste par l'IA",
+        "description": "L'IA gere les parties fastidieuses — generation de structures, suggestion de liens, detection des lacunes de mots-cles."
+      }
+    ]
+  },
+  "stubs": {
+    "blog": {
+      "title": "Blog",
+      "subtitle": "Insights SEO, mises a jour produit et conseils en strategie de contenu.",
+      "coming_soon": "Bientot disponible. Nous preparons nos premiers articles."
+    },
+    "changelog": {
+      "title": "Changelog",
+      "subtitle": "Suivez chaque mise a jour, fonctionnalite et amelioration de Meridian.",
+      "coming_soon": "Bientot disponible. Restez a l'ecoute pour nos premieres notes de version."
+    },
+    "docs": {
+      "title": "Documentation",
+      "subtitle": "Apprenez a tirer le meilleur parti de Meridian.",
+      "coming_soon": "Bientot disponible. Notre documentation est en cours de redaction."
+    }
+  }
+}
