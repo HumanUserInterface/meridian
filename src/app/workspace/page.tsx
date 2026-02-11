@@ -57,8 +57,10 @@ export default function WorkspacePage() {
                       </p>
                     </div>
                   </div>
-                  <Button>
-                    Upgrade Now
+                  <Button asChild>
+                    <a href="/api/checkout?products=cb5589af-6825-488b-a9a1-33007e32fdb6">
+                      Upgrade Now
+                    </a>
                   </Button>
                 </div>
               </CardContent>
@@ -123,8 +125,10 @@ export default function WorkspacePage() {
                   <p className="text-sm text-muted-foreground mb-4">
                     Upgrade to invite team members and work together on projects
                   </p>
-                  <Button variant="outline">
-                    View Pro Plans
+                  <Button variant="outline" asChild>
+                    <a href="/api/checkout?products=cb5589af-6825-488b-a9a1-33007e32fdb6">
+                      View Pro Plans
+                    </a>
                   </Button>
                 </div>
               </CardContent>
